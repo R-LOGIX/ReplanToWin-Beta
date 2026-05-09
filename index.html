@@ -6,72 +6,103 @@
     <title>ReplanToWin</title>
     <link rel="icon" href="854.png" type="image/png">
     <link rel="apple-touch-icon" href="854.png">
-    <!-- PWA用マニフェスト(Data URI) -->
-    <link rel="manifest" href="data:application/manifest+json;utf8,%7B%22name%22%3A%22ReplanToWin%22%2C%22short_name%22%3A%22Replan%22%2C%22start_url%22%3A%22.%2Findex.html%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23020617%22%2C%22theme_color%22%3A%22%2300f2ff%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22854.png%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fpng%22%7D%5D%7D">
-    <meta name="theme-color" content="#00f2ff">
     
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    
+    <style>
+        :root {
+            --bg: #020617;
+            --panel: rgba(15, 23, 42, 0.95);
+            --accent: #00f2ff;
+            --accent-glow: rgba(0, 242, 255, 0.3);
+            --text: #e2e8f0;
+            --danger: #ff4757;
+        }
+
+        * { box-sizing: border-box; }
+        body {
+            background-color: var(--bg);
+            background-image: radial-gradient(circle at 50% 50%, #0f172a 0%, #020617 100%);
+            color: var(--text); font-family: 'Noto Sans JP', sans-serif; margin: 0; min-height: 100vh;
+        }
+
+        nav {
+            display: flex; justify-content: space-around; background: rgba(0, 0, 0, 0.9);
+            border-bottom: 2px solid var(--accent-glow); padding: 12px;
+            position: sticky; top: 0; z-index: 1000;
+        }
+        nav div { cursor: pointer; font-size: 0.7rem; color: #64748b; font-family: 'Orbitron'; font-weight: bold; letter-spacing: 1px; }
+        nav div.active { color: var(--accent); text-shadow: 0 0 10px var(--accent); }
+
+        .view { max-width: 800px; margin: 20px auto; padding: 0 20px; display: none; }
+        .view.active { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .glass-card {
+            background: var(--panel); border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px; padding: 20px; margin-bottom: 15px;
+        }
+
+        h3 { font-size: 1rem; color: var(--accent); margin-top: 0; border-left: 3px solid var(--accent); padding-left: 10px; }
+
+        button {
+            background: linear-gradient(135deg, var(--accent), #0099ff); color: #000;
+            border: none; padding: 16px; border-radius: 8px; font-weight: bold; cursor: pointer; 
+            width: 100%; font-size: 1rem; margin-bottom: 10px;
+        }
+        button:active { transform: scale(0.98); }
+        button.secondary { background: transparent; border: 1px solid var(--accent); color: var(--accent); }
+        button.danger { background: rgba(255, 71, 87, 0.1); border: 1px solid var(--danger); color: var(--danger); padding: 8px 12px; width: auto; font-size: 0.8rem; }
+
+        input, select, textarea {
+            background: rgba(0, 0, 0, 0.6); border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff; padding: 12px; border-radius: 8px; width: 100%; margin-bottom: 12px; font-size: 1rem;
+        }
+
+        /* 編集用入力欄のスタイル */
+        .plan-edit-input {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--accent);
+            color: #fff;
+            padding: 4px 8px;
+            border-radius: 4px;
+            width: 100%;
+            font-size: 0.9rem;
+            margin: 4px 0;
+        }
+
+        .item-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .status-tag { font-size: 0.65rem; background: var(--accent); color: #000; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
+
+        .checkbox-group { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 8px; }
+        .checkbox-group label { display: flex; align-items: center; gap: 5px; font-size: 0.9rem; cursor: pointer; color: #a0aec0; }
+        .checkbox-group input[type="checkbox"] { width: 18px; height: 18px; margin: 0; accent-color: var(--accent); }
+
+        #loading {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(2, 6, 23, 0.95); z-index: 2000; display: none;
+            flex-direction: column; align-items: center; justify-content: center;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.7; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+    </style>
 </head>
 <body>
-
-<!-- オンボーディングウィザード -->
-<div id="wizard-overlay" class="overlay hidden">
-    <div class="wizard-card glass-card">
-        <div id="wizard-content">
-            <h3 style="font-family:Orbitron;">WELCOME TO ReplanToWin</h3>
-            <p id="wizard-message">学習目標を登録しましょう。</p>
-            <div id="wizard-answers" class="wizard-buttons">
-                <button id="wizard-btn1" class="wiz-btn" style="display:none;">選択</button>
-                <button id="wizard-btn2" class="wiz-btn" style="display:none;">選択</button>
-                <input id="wizard-input" type="text" placeholder="入力..." class="wiz-input" style="display:none;">
-                <button id="wizard-confirm" class="wiz-confirm" style="display:none;">決定</button>
-            </div>
-        </div>
-    </div>
-</div>
 
 <div id="loading">
     <div style="font-size: 3rem; animation: pulse 1s infinite;">⚡</div>
     <div style="font-family: 'Orbitron'; color: var(--accent); letter-spacing: 3px; margin-top: 15px;">AI GENERATING...</div>
 </div>
 
-<!-- ポモドーロタイマー オーバーレイ -->
-<div id="pomodoro-overlay" class="overlay hidden">
-    <div class="pomodoro-container glass-card">
-        <div style="text-align:right; margin-bottom:10px;">
-            <button id="pomodoro-close-btn" class="danger" style="width:auto; padding:4px 12px;">✕ 終了</button>
-        </div>
-        <div style="text-align:center; font-family:Orbitron;">
-            <div id="pomodoro-timer" style="font-size:4rem; letter-spacing:2px;">25:00</div>
-            <p id="pomodoro-mode" style="color:var(--accent);">集中</p>
-        </div>
-        <div style="display:flex; gap:10px; justify-content:center; margin:15px 0;">
-            <button id="pomodoro-start" style="width:auto; padding:10px 25px;">▶ 開始</button>
-            <button id="pomodoro-pause" style="width:auto; padding:10px 25px; display:none;">⏸️ 一時停止</button>
-            <button id="pomodoro-reset" style="width:auto; padding:10px 25px; background:rgba(255,255,255,0.1); color:var(--accent);">↺ リセット</button>
-        </div>
-        <div style="margin-top:10px;">
-            <label style="font-size:0.8rem;">学習対象：</label>
-            <select id="pomodoro-subject">
-                <option value="">未選択</option>
-            </select>
-        </div>
-        <div id="pomodoro-log" style="margin-top:15px; max-height:120px; overflow-y:auto;"></div>
-    </div>
-</div>
-
 <nav>
-    <div style="display:flex; align-items:center; gap:5px;">
-        <span style="font-family:Orbitron; color:var(--accent); font-size:1rem; letter-spacing:2px; text-shadow:0 0 10px var(--accent);">⚡ ReplanToWin</span>
-    </div>
-    <div style="display:flex; gap:15px;">
-        <div onclick="switchView('home')" id="nav-home" class="active">ホーム</div>
-        <div onclick="switchView('settings')" id="nav-settings">1. 教材登録</div>
-        <div onclick="switchView('progress')" id="nav-progress">2. 進捗入力</div>
-        <div onclick="switchView('plan')" id="nav-plan">3. 計画表</div>
-        <div onclick="openPomodoro()" style="cursor:pointer; font-size:1.2rem;">⏱️</div>
-    </div>
+    <div onclick="switchView('home')" id="nav-home" class="active">ホーム</div>
+    <div onclick="switchView('settings')" id="nav-settings">1. 教材登録</div>
+    <div onclick="switchView('progress')" id="nav-progress">2. 進捗入力</div>
+    <div onclick="switchView('plan')" id="nav-plan">3. 計画表</div>
 </nav>
 
 <div id="view-home" class="view active">
@@ -85,20 +116,6 @@
             <div id="stat-days" style="font-family: 'Orbitron'; font-size: 2rem; color: #bc00ff;">--</div>
         </div>
     </div>
-
-    <!-- ヒートマップカレンダー -->
-    <div class="glass-card" id="heatmap-card">
-        <h3>📅 学習ヒートマップ</h3>
-        <div id="heatmap-calendar" style="display:grid; gap:3px; margin-top:10px;"></div>
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
-            <span id="heatmap-month" style="font-family:Orbitron;"></span>
-            <div>
-                <button onclick="changeHeatmapMonth(-1)" style="width:auto; padding:4px 10px; font-size:0.8rem;">◀</button>
-                <button onclick="changeHeatmapMonth(1)" style="width:auto; padding:4px 10px; font-size:0.8rem;">▶</button>
-            </div>
-        </div>
-    </div>
-
     <div class="glass-card">
         <h3>本日の学習タスク</h3>
         <div id="today-list"></div>
@@ -111,47 +128,23 @@
             <span style="font-size: 0.9rem;">計画再開/開始日</span>
             <input type="date" id="sys-start-date" style="width: auto; margin: 0; padding: 8px;">
         </div>
-        <div class="item-row" style="padding: 5px 0; border: none;">
-            <span style="font-size: 0.9rem;">計画モード</span>
-            <select id="schedule-mode" style="width: auto; margin: 0;">
-                <option value="standard">標準（均等割り）</option>
-                <option value="alternating">小刻み2周＋最終仕上げ1周</option>
-            </select>
-        </div>
     </div>
 
     <button id="main-plan-btn" onclick="generatePlan()" class="secondary">✨ AI学習計画を生成する</button>
-    
-    <div class="glass-card" style="margin-top:15px;">
-        <h3>🛠️ データ管理</h3>
-        <div style="display:flex; gap:10px; flex-wrap:wrap;">
-            <button id="export-data-btn" onclick="exportAllData()" style="width:auto; padding:8px 12px; font-size:0.8rem;">📤 全データエクスポート</button>
-            <button id="import-data-btn" onclick="importAllData()" style="width:auto; padding:8px 12px; font-size:0.8rem;">📥 全データインポート</button>
-            <button id="export-plan-template-btn" onclick="exportPlanTemplate()" style="width:auto; padding:8px 12px; font-size:0.8rem;">📋 プラン共有用エクスポート</button>
-        </div>
-        <p style="font-size:0.7rem; opacity:0.6; margin-top:8px;">※データはブラウザ内に保存され、外部に送信されません。エクスポートしたファイルでバックアップや共有が可能です。</p>
-    </div>
 </div>
 
 <div id="view-settings" class="view">
     <div class="glass-card">
-        <h3>新しい教材・課題を追加する</h3>
-        <div style="display:flex; gap:10px; align-items:center; margin-bottom:10px;">
-            <label style="font-size:0.9rem;">種類：</label>
-            <select id="item-type" style="width:auto;">
-                <option value="exam">試験</option>
-                <option value="task">課題・タスク</option>
-            </select>
-        </div>
-        <input id="in-sub" placeholder="科目名 / タスク名 (例: 数学、レポート)">
+        <h3>新しい教材を追加する</h3>
+        <input id="in-sub" placeholder="科目 (例: 数学、英語)">
         
         <div style="margin-bottom: 12px;">
-            <label style="font-size: 0.8rem; color: var(--accent); display: block; margin-bottom: 4px;">期日：</label>
+            <label style="font-size: 0.8rem; color: var(--accent); display: block; margin-bottom: 4px;">試験日（または完了目標日）：</label>
             <input id="in-date" type="date" style="margin-bottom: 0;">
         </div>
 
         <div style="margin-bottom: 15px;">
-            <label style="font-size: 0.8rem; color: var(--accent); display: block; margin-bottom: 4px;">この教材・タスクを学習する曜日：</label>
+            <label style="font-size: 0.8rem; color: var(--accent); display: block; margin-bottom: 4px;">この教材を学習する曜日：</label>
             <div class="checkbox-group" id="in-days">
                 <label><input type="checkbox" value="1" checked>月</label>
                 <label><input type="checkbox" value="2" checked>火</label>
@@ -167,6 +160,7 @@
             <option value="range">ページ範囲 (1-200 など)</option>
             <option value="vol">合計件数 (1500語 など)</option>
             <option value="list">項目リスト (プリントAなど)</option>
+            <option value="chunk">小刻み復習 (チャンク分割)</option>
         </select>
         <div id="ui-range">
             <input id="in-name-range" placeholder="教材名">
@@ -182,14 +176,20 @@
             <input id="in-name-list" placeholder="教材名">
             <textarea id="in-val-list" placeholder="項目をカンマ(,)で区切って入力" rows="3"></textarea>
         </div>
+        <div id="ui-chunk" style="display:none;">
+            <input id="in-name-chunk" placeholder="教材名">
+            <input id="in-val-chunk" placeholder="範囲 (例: 1-150)">
+            <input id="in-chunk-size" type="number" placeholder="チャンクサイズ (ページ数/件数)" min="1">
+            <input id="in-unit-chunk" value="P" placeholder="単位">
+        </div>
         <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
             <span>目標周回数:</span>
             <input id="in-rounds" type="number" value="3" style="width: 80px; margin: 0;">
         </div>
-        <button onclick="addMaterial()">この教材・タスクをリストに登録する</button>
+        <button onclick="addMaterial()">この教材をリストに登録する</button>
     </div>
     <div class="glass-card">
-        <h3>登録済みの教材・タスク</h3>
+        <h3>登録済みの教材</h3>
         <div id="registered-list"></div>
     </div>
 </div>
@@ -200,19 +200,471 @@
 </div>
 
 <div id="view-plan" class="view">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 10px;">
         <h3 style="margin: 0;">全日程の計画表</h3>
-        <div>
+        <div style="display: flex; gap: 8px;">
             <button id="btn-edit-plan" onclick="togglePlanEdit()" class="secondary" style="width: auto; padding: 6px 15px; margin: 0; font-size: 0.8rem;">✎ 編集</button>
-            <button onclick="printPlan()" class="secondary" style="width: auto; padding: 6px 15px; margin: 0 0 0 5px; font-size: 0.8rem;">🖨️ PDF出力</button>
+            <button onclick="downloadICS()" class="secondary" style="width: auto; padding: 6px 15px; margin: 0; font-size: 0.8rem;">📅 Googleカレンダー出力</button>
         </div>
     </div>
     <div id="full-plan-area"></div>
 </div>
 
-<!-- 通知リマインダー用のダミーdiv -->
-<div id="notification-permission" style="display:none;"></div>
+<script>
+// --- AUDIO ENGINE ---
+let audioCtx;
+function playSound(f, d) {
+    try {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const o = audioCtx.createOscillator();
+        const g = audioCtx.createGain();
+        o.connect(g); g.connect(audioCtx.destination);
+        o.frequency.setValueAtTime(f, audioCtx.currentTime);
+        g.gain.setValueAtTime(0.05, audioCtx.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + d);
+        o.start(); o.stop(audioCtx.currentTime + d);
+    } catch(e) {}
+}
 
-<script src="script.js"></script>
+// --- HELPER ---
+function toYMD(d) {
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+}
+
+// --- DATA ---
+const KEY = 'test_os_v6_1_data';
+let state = { exams: [], plan: {} };
+let isPlanEditing = false; 
+
+function load() {
+    const saved = localStorage.getItem(KEY);
+    if (saved) state = JSON.parse(saved);
+}
+
+function save() {
+    try {
+        localStorage.setItem(KEY, JSON.stringify(state));
+    } catch(e) {
+        console.error('Storage Save Error', e);
+    }
+    render();
+}
+
+// --- UI ---
+function switchView(id) {
+    playSound(600, 0.1);
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.querySelectorAll('nav div').forEach(n => n.classList.remove('active'));
+    const target = document.getElementById(`view-${id}`);
+    if (target) {
+        target.classList.add('active');
+        document.getElementById(`nav-${id}`).classList.add('active');
+    }
+}
+
+function toggleMode() {
+    const m = document.getElementById('in-mode').value;
+    document.getElementById('ui-range').style.display = m === 'range' ? 'block' : 'none';
+    document.getElementById('ui-vol').style.display   = m === 'vol'   ? 'block' : 'none';
+    document.getElementById('ui-list').style.display  = m === 'list'  ? 'block' : 'none';
+    document.getElementById('ui-chunk').style.display = m === 'chunk' ? 'block' : 'none';
+}
+
+function togglePlanEdit() {
+    isPlanEditing = !isPlanEditing;
+    const btn = document.getElementById('btn-edit-plan');
+    btn.innerText = isPlanEditing ? '✔ 完了' : '✎ 編集';
+    if (!isPlanEditing) playSound(800, 0.1);
+    render();
+}
+
+function updatePlanManual(date, idx, value) {
+    if (state.plan[date] && state.plan[date][idx]) {
+        state.plan[date][idx].desc = value;
+        localStorage.setItem(KEY, JSON.stringify(state));
+    }
+}
+
+// --- LOGIC ---
+function addMaterial() {
+    const sub = document.getElementById('in-sub').value.trim();
+    const date = document.getElementById('in-date').value;
+    if (!sub || !date) return alert('科目名と日付を入力してください');
+
+    let selectedDays = Array.from(document.querySelectorAll('#sys-days input[type="checkbox"]:checked')).map(cb => parseInt(cb.value));
+    if (selectedDays.length === 0) {
+        const activeView = document.querySelector('.view.active');
+        if (activeView) {
+            selectedDays = Array.from(activeView.querySelectorAll('input[type="checkbox"]:checked')).map(cb => parseInt(cb.value));
+        }
+    }
+
+    if (selectedDays.length === 0) {
+        return alert('教材を学習する曜日を1つ以上選択してください');
+    }
+
+    let exam = state.exams.find(e => e.subject === sub && e.date === date);
+    if (!exam) {
+        exam = { id: Date.now(), subject: sub, date: date, materials: [] };
+        state.exams.push(exam);
+    }
+
+    const mode = document.getElementById('in-mode').value;
+    const rounds = parseInt(document.getElementById('in-rounds').value) || 1;
+    const mId = Date.now() + Math.floor(Math.random() * 10000);
+
+    let newMat;
+    const common = { id: mId, rounds, days: selectedDays };
+
+    if (mode === 'range') {
+        let val = document.getElementById('in-val-range').value;
+        val = val.replace(/[０-９]/g, s => String.fromCharCode(s.charCodeAt(0) - 0xFEE0)).replace(/\s+/g, '');
+        const m = val.match(/^(\d+)[-〜~ー](\d+)$/);
+        if (!m) return alert('範囲は 1-100 の形式で入力してください');
+        newMat = { ...common, type: 'range', name: document.getElementById('in-name-range').value || '教材', start: parseInt(m[1]), end: parseInt(m[2]), doneRounds: new Array(rounds).fill(0), unit: document.getElementById('in-unit-range').value };
+    } else if (mode === 'vol') {
+        let val = document.getElementById('in-val-vol').value.replace(/[０-９]/g, s => String.fromCharCode(s.charCodeAt(0) - 0xFEE0));
+        const total = parseInt(val);
+        if (!total) return alert('合計件数を入力してください');
+        newMat = { ...common, type: 'vol', name: document.getElementById('in-name-vol').value || '教材', total, doneRounds: new Array(rounds).fill(0), unit: document.getElementById('in-unit-vol').value };
+    } else if (mode === 'list') {
+        const items = document.getElementById('in-val-list').value.split(/[,、\n]/).filter(s => s.trim());
+        if (items.length === 0) return alert('項目を入力してください');
+        newMat = { ...common, type: 'list', name: document.getElementById('in-name-list').value || '教材', items: items.map(l => ({ l: l.trim(), d: 0 })) };
+    } else if (mode === 'chunk') {
+        let val = document.getElementById('in-val-chunk').value;
+        val = val.replace(/[０-９]/g, s => String.fromCharCode(s.charCodeAt(0) - 0xFEE0)).replace(/\s+/g, '');
+        const m = val.match(/^(\d+)[-〜~ー](\d+)$/);
+        if (!m) return alert('範囲は 1-100 の形式で入力してください');
+        const chunkSize = parseInt(document.getElementById('in-chunk-size').value) || 1;
+        if (chunkSize < 1) return alert('チャンクサイズは1以上で入力してください');
+        newMat = {
+            ...common,
+            type: 'chunk',
+            name: document.getElementById('in-name-chunk').value || '教材',
+            start: parseInt(m[1]),
+            end: parseInt(m[2]),
+            chunkSize,
+            unit: document.getElementById('in-unit-chunk').value,
+            doneRounds: new Array(rounds).fill(0)
+        };
+    }
+
+    exam.materials.push(newMat);
+    playSound(800, 0.2);
+    save(); 
+    alert('教材を登録しました');
+}
+
+function generatePlan() {
+    if (state.exams.length === 0) return alert('先に教材を登録してください');
+    
+    playSound(400, 0.5);
+    document.getElementById('loading').style.display = 'flex';
+
+    setTimeout(() => {
+        try {
+            state.plan = {};
+            const startDateInput = document.getElementById('sys-start-date').value;
+            let globalStart = startDateInput ? new Date(startDateInput) : new Date();
+            globalStart.setHours(0,0,0,0);
+
+            state.exams.forEach(exam => {
+                const [ey, em, ed] = exam.date.split('-').map(Number);
+                const endDate = new Date(ey, em - 1, ed);
+                endDate.setHours(0,0,0,0);
+                
+                exam.materials.forEach(mat => {
+                    const matDays = (mat.days && mat.days.length > 0) ? mat.days : [0,1,2,3,4,5,6];
+                    let availableDates = [];
+                    let curDate = new Date(globalStart);
+                    while (curDate <= endDate) {
+                        if (matDays.includes(curDate.getDay())) {
+                            availableDates.push(new Date(curDate));
+                        }
+                        curDate.setDate(curDate.getDate() + 1);
+                    }
+                    if (availableDates.length === 0) availableDates.push(new Date(globalStart));
+                    const daysCount = availableDates.length;
+
+                    if (mat.type === 'list') {
+                        let queue = [];
+                        for (let r = 1; r <= mat.rounds; r++) {
+                            mat.items.forEach(it => { if (it.d < r) queue.push({ l: it.l, r: r }); });
+                        }
+                        const perDay = Math.ceil(queue.length / daysCount);
+                        let cur = 0;
+                        for (let i=0; i<daysCount && cur<queue.length; i++) {
+                            const k = toYMD(availableDates[i]);
+                            if (!state.plan[k]) state.plan[k] = [];
+                            for (let j=0; j<perDay && cur<queue.length; j++) {
+                                if (queue[cur]) {
+                                    const t = queue[cur++];
+                                    state.plan[k].push({ sub: exam.subject, mat: mat.name, desc: t.l, info: `${t.r}周目`, id: mat.id });
+                                }
+                            }
+                        }
+                    } else if (mat.type === 'chunk') {
+                        // チャンク分割
+                        const totalUnits = mat.end - mat.start + 1;
+                        const chunks = [];
+                        for (let s = mat.start; s <= mat.end; s += mat.chunkSize) {
+                            const e = Math.min(mat.end, s + mat.chunkSize - 1);
+                            chunks.push({ start: s, end: e });
+                        }
+
+                        let queue = [];
+                        // 最初の (rounds-1) 周は各チャンクを連続
+                        for (let r = 1; r < mat.rounds; r++) {
+                            for (const ch of chunks) {
+                                queue.push({ desc: `${ch.start}〜${ch.end}${mat.unit||''}`, r });
+                            }
+                        }
+                        // 最後の1周は全チャンク1回ずつ
+                        for (const ch of chunks) {
+                            queue.push({ desc: `${ch.start}〜${ch.end}${mat.unit||''}`, r: mat.rounds });
+                        }
+
+                        const perDay = Math.ceil(queue.length / daysCount);
+                        let cur = 0;
+                        for (let i = 0; i < daysCount && cur < queue.length; i++) {
+                            const k = toYMD(availableDates[i]);
+                            if (!state.plan[k]) state.plan[k] = [];
+                            for (let j = 0; j < perDay && cur < queue.length; j++) {
+                                const task = queue[cur++];
+                                state.plan[k].push({
+                                    sub: exam.subject,
+                                    mat: mat.name,
+                                    desc: task.desc,
+                                    info: `${task.r}周目`,
+                                    id: mat.id
+                                });
+                            }
+                        }
+                    } else {
+                        let unitsPerRound = (mat.type === 'range' ? (mat.end - mat.start + 1) : mat.total);
+                        if (!mat.doneRounds) mat.doneRounds = new Array(mat.rounds).fill(0);
+
+                        let queue = [];
+                        for (let r=0; r<mat.rounds; r++) {
+                            let rem = unitsPerRound - (mat.doneRounds[r] || 0);
+                            if (rem > 0) {
+                                queue.push({ r: r+1, start: mat.type === 'range' ? (mat.start + (mat.doneRounds[r]||0)) : null, rem });
+                            }
+                        }
+
+                        let totalRem = queue.reduce((sum, q) => sum + q.rem, 0);
+                        if (totalRem > 0) {
+                            const perDay = Math.ceil(totalRem / daysCount);
+                            let qIdx = 0;
+                            for (let i=0; i<daysCount && qIdx < queue.length; i++) {
+                                const k = toYMD(availableDates[i]);
+                                if (!state.plan[k]) state.plan[k] = [];
+                                let dayRem = perDay;
+                                while (dayRem > 0 && qIdx < queue.length) {
+                                    let q = queue[qIdx];
+                                    let amt = Math.min(dayRem, q.rem);
+                                    let descText = mat.type === 'range' ? `${q.start}〜${q.start + amt - 1}${mat.unit||''}` : `${amt}${mat.unit||''}`;
+                                    if (mat.type === 'range') q.start += amt;
+                                    state.plan[k].push({ sub: exam.subject, mat: mat.name, desc: descText, info: `${q.r}周目`, id: mat.id });
+                                    q.rem -= amt; dayRem -= amt;
+                                    if (q.rem <= 0) qIdx++;
+                                }
+                            }
+                        }
+                    }
+                });
+            });
+            save();
+            document.getElementById('loading').style.display = 'none';
+            playSound(1000, 0.3);
+            switchView('home');
+        } catch (e) {
+            document.getElementById('loading').style.display = 'none';
+            console.error(e);
+            alert('エラーが発生しました');
+        }
+    }, 500);
+}
+
+function updateProg(matId, itIdx, val) {
+    const m = findMat(matId);
+    if (!m) return;
+    if (m.type === 'list') {
+        const r = parseInt(val) || 0;
+        if (itIdx === -1) m.items.forEach(it => it.d = r);
+        else m.items[itIdx].d = r;
+    } else if (m.type === 'chunk') {
+        // チャンク教材も doneRounds で進捗管理
+        let parsed = parseInt(val) || 0;
+        if (itIdx > 0) {
+            if (!m.doneRounds) m.doneRounds = new Array(m.rounds).fill(0);
+            while(m.doneRounds.length < m.rounds) m.doneRounds.push(0);
+            m.doneRounds[itIdx-1] = Math.max(0, parsed);
+        }
+    } else {
+        let parsed = 0;
+        if (m.type === 'range' && typeof val === 'string' && val.match(/\d+[-〜~ー]\d+/)) {
+            let parts = val.replace(/[０-９]/g, s => String.fromCharCode(s.charCodeAt(0) - 0xFEE0)).split(/[-〜~ー]/);
+            parsed = (parseInt(parts[1]) - m.start + 1) || 0;
+        } else {
+            parsed = parseInt(val) || 0;
+        }
+        if (itIdx > 0) {
+            if (!m.doneRounds) m.doneRounds = new Array(m.rounds).fill(0);
+            while(m.doneRounds.length < m.rounds) m.doneRounds.push(0);
+            m.doneRounds[itIdx-1] = Math.max(0, parsed);
+        }
+    }
+    save();
+}
+
+function deleteMat(eId, mId) {
+    if(!confirm('削除しますか？')) return;
+    const e = state.exams.find(ex => ex.id === eId);
+    if (e) e.materials = e.materials.filter(m => m.id !== mId);
+    Object.keys(state.plan).forEach(k => state.plan[k] = state.plan[k].filter(t => t.id !== mId));
+    save();
+}
+
+function findMat(id) {
+    for (let e of state.exams) for (let m of e.materials) if (m.id == id) return m;
+    return null;
+}
+
+// --- Google Calendar Export (ICS) ---
+function downloadICS() {
+    if (Object.keys(state.plan).length === 0) {
+        alert('先に計画を生成してください');
+        return;
+    }
+
+    let icsContent = [
+        'BEGIN:VCALENDAR',
+        'VERSION:2.0',
+        'PRODID:-//ReplanToWin//Study Plan//JA',
+        'CALSCALE:GREGORIAN',
+        'METHOD:PUBLISH'
+    ];
+
+    Object.keys(state.plan).sort().forEach(dateStr => {
+        const tasks = state.plan[dateStr];
+        if (tasks.length === 0) return;
+
+        const dt = dateStr.replace(/-/g, '');
+        const subjects = [...new Set(tasks.map(t => t.sub))].join('・');
+        const description = tasks.map(t => `【${t.sub}】${t.mat}: ${t.desc} (${t.info})`).join('\n');
+        const summary = `📚 ${subjects}`;
+
+        icsContent.push('BEGIN:VEVENT');
+        icsContent.push(`DTSTART;VALUE=DATE:${dt}`);
+        const dtEnd = new Date(dateStr);
+        dtEnd.setDate(dtEnd.getDate() + 1);
+        const dtEndStr = dtEnd.toISOString().slice(0, 10).replace(/-/g, '');
+        icsContent.push(`DTEND;VALUE=DATE:${dtEndStr}`);
+        icsContent.push(`SUMMARY:${summary}`);
+        icsContent.push(`DESCRIPTION:${description.replace(/\n/g, '\\n')}`);
+        icsContent.push('STATUS:CONFIRMED');
+        icsContent.push('END:VEVENT');
+    });
+
+    icsContent.push('END:VCALENDAR');
+
+    const blob = new Blob([icsContent.join('\r\n')], { type: 'text/calendar;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `StudyPlan_${new Date().toISOString().slice(0,10)}.ics`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    playSound(1000, 0.2);
+}
+
+function render() {
+    const today = toYMD(new Date()); 
+    const hasPlan = Object.keys(state.plan).length > 0;
+    document.getElementById('main-plan-btn').innerText = hasPlan ? '⚡ 進捗状況を解析し、AIが計画を再構築' : '✨ AI学習計画を新規生成する';
+
+    let tAll = 0, tDone = 0;
+    state.exams.forEach(e => e.materials.forEach(m => {
+        if (m.type === 'list') { 
+            tAll += m.items.length * m.rounds; 
+            tDone += m.items.reduce((s,i)=>s+i.d, 0); 
+        } else if (m.type === 'chunk') {
+            let units = m.end - m.start + 1;
+            tAll += units * m.rounds;
+            tDone += (m.doneRounds || []).reduce((a,b)=>a+b, 0);
+        } else { 
+            let units = (m.type==='range'?(m.end-m.start+1):m.total);
+            tAll += units * m.rounds; 
+            tDone += (m.doneRounds || []).reduce((a,b)=>a+b, 0);
+        }
+    }));
+    document.getElementById('stat-progress').innerText = Math.floor((tDone/(tAll||1))*100) + '%';
+    
+    if (state.exams.length) {
+        const dates = state.exams.map(e => new Date(e.date));
+        const diff = Math.ceil((Math.min(...dates) - new Date().setHours(0,0,0,0)) / 86400000);
+        document.getElementById('stat-days').innerText = Math.max(0, diff) + '日';
+    }
+
+    const tasks = state.plan[today] || [];
+    document.getElementById('today-list').innerHTML = tasks.length ? tasks.map(t => `<div class="item-row"><div><small>${t.sub}</small><br><b>${t.mat}: ${t.desc}</b></div><span class="status-tag">${t.info}</span></div>`).join('') : '<p style="text-align:center; opacity:0.5;">予定なし</p>';
+
+    document.getElementById('registered-list').innerHTML = state.exams.map(e => e.materials.map(m => `<div class="item-row"><div><small>${e.subject}</small><br><b>${m.name}</b></div><button class="danger" onclick="deleteMat(${e.id}, ${m.id})">削除</button></div>`).join('')).join('') || '<p style="opacity:0.5;">登録なし</p>';
+
+    // 進捗入力エリア
+    document.getElementById('progress-input-area').innerHTML = state.exams.map(e => e.materials.map(m => {
+        if (m.type === 'list') {
+            return `<div class="glass-card"><h3>${m.name}</h3><div class="item-row"><span>一括</span><input type="number" onchange="updateProg(${m.id},-1,this.value)" style="width:80px;"><span>周</span></div>${m.items.map((it, idx) => `<div class="item-row"><span>${it.l}</span><input type="number" value="${it.d}" onchange="updateProg(${m.id},${idx},this.value)" style="width:60px;"></div>`).join('')}</div>`;
+        } else if (m.type === 'chunk') {
+            return `<div class="glass-card"><h3>${m.name} (小刻み)</h3>
+                <div style="font-size:0.8rem;color:#a0aec0;margin-bottom:8px;">範囲: ${m.start}〜${m.end} チャンク${m.chunkSize}${m.unit||''}ずつ</div>
+                ${new Array(m.rounds).fill(0).map((_, idx) => {
+                    const done = (m.doneRounds && m.doneRounds[idx]) || 0;
+                    return `<div class="item-row"><span>${idx+1}周目</span>
+                        <input type="number" value="${done}" onchange="updateProg(${m.id},${idx+1},this.value)" style="width:100px;">
+                        <span>${m.unit||''}</span></div>`;
+                }).join('')}
+            </div>`;
+        } else {
+            let drs = m.doneRounds || new Array(m.rounds).fill(0);
+            let infoText = m.type === 'range' ? `全体範囲: ${m.start}〜${m.end}` : `全体量: ${m.total}`;
+            return `<div class="glass-card"><h3>${m.name}</h3>
+                <div style="font-size: 0.8rem; color: #a0aec0; margin-bottom: 8px;">${infoText} ${m.unit||''}</div>
+                ${drs.map((dr, idx) => {
+                    let val = dr;
+                    if(m.type === 'range' && dr > 0) val = `${m.start}-${m.start + dr - 1}`;
+                    return `<div class="item-row"><span>${idx+1}周目</span><input type="${m.type==='range'?'text':'number'}" value="${val}" onchange="updateProg(${m.id},${idx+1},this.value)" style="width:100px;"><span>${m.type==='range'?'':(m.unit||'')}</span></div>`
+                }).join('')}</div>`;
+        }
+    }).join('')).join('') || '<p style="opacity:0.5;">登録なし</p>';
+
+    let planHtml = '';
+    Object.keys(state.plan).sort().forEach(d => {
+        planHtml += `<h4 style="color:var(--accent); border-bottom:1px solid #333; margin-bottom:10px; margin-top:20px;">${d}</h4>`;
+        state.plan[d].forEach((t, idx) => {
+            const content = isPlanEditing ? `<input type="text" class="plan-edit-input" value="${t.desc}" oninput="updatePlanManual('${d}', ${idx}, this.value)">` : `<b>${t.mat}: ${t.desc}</b>`;
+            planHtml += `<div class="item-row"><div style="flex: 1;"><small>${t.sub}</small><br>${content}</div><span class="status-tag">${t.info}</span></div>`;
+        });
+    });
+    document.getElementById('full-plan-area').innerHTML = planHtml || '<p style="opacity:0.5;">計画がありません</p>';
+}
+
+window.onload = () => {
+    load();
+    document.getElementById('sys-start-date').value = toYMD(new Date());
+    render();
+    if ('serviceWorker' in navigator) {
+        const sw = "self.addEventListener('install',e=>e.waitUntil(self.skipWaiting()));self.addEventListener('activate',e=>e.waitUntil(self.clients.claim()));self.addEventListener('fetch',e=>{});";
+        navigator.serviceWorker.register(URL.createObjectURL(new Blob([sw], {type: 'application/javascript'}))).catch(()=>{});
+    }
+};
+
+window.addEventListener('beforeunload', save);
+window.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') save(); });
+</script>
 </body>
 </html>
