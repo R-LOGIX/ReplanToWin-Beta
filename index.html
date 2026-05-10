@@ -723,7 +723,7 @@ function generatePlan() {
                     const matDays = (mat.days && mat.days.length > 0) ? mat.days : [0,1,2,3,4,5,6];
                     let availableDates = [];
                     let curDate = new Date(globalStart);
-                    while (curDate <= endDate) {
+                    while (curDate < endDate) {
                         if (matDays.includes(curDate.getDay())) {
                             availableDates.push(new Date(curDate));
                         }
