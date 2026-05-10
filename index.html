@@ -32,6 +32,7 @@
         }
         nav div { cursor: pointer; font-size: 0.7rem; color: #64748b; font-family: 'Orbitron'; font-weight: bold; letter-spacing: 1px; }
         nav div.active { color: var(--accent); text-shadow: 0 0 10px var(--accent); }
+        .nav-tut { font-size: 0.65rem !important; color: #475569 !important; font-family: 'Noto Sans JP', sans-serif !important; font-weight: normal !important; letter-spacing: 0 !important; }
 
         .view { max-width: 800px; margin: 20px auto; padding: 0 20px; display: none; }
         .view.active { display: block; animation: fadeIn 0.3s ease; }
@@ -88,6 +89,134 @@
             50% { transform: scale(1.1); opacity: 0.7; }
             100% { transform: scale(1); opacity: 1; }
         }
+
+        /* ===== ホームタイトル ===== */
+        .home-title-block {
+            text-align: center;
+            padding: 18px 0 10px;
+            margin-bottom: 10px;
+        }
+        .home-title-block .app-logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.7rem;
+            font-weight: 700;
+            color: var(--accent);
+            text-shadow: 0 0 18px var(--accent), 0 0 40px rgba(0,242,255,0.4);
+            letter-spacing: 2px;
+        }
+        .home-title-block .app-tagline {
+            font-size: 0.72rem;
+            color: #64748b;
+            margin-top: 4px;
+            letter-spacing: 1px;
+        }
+
+        /* ===== 小刻み復習バッジ ===== */
+        .spaced-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: linear-gradient(135deg, rgba(188,0,255,0.15), rgba(0,242,255,0.15));
+            border: 1px solid rgba(188,0,255,0.5);
+            border-radius: 8px;
+            padding: 10px 14px;
+            width: 100%;
+            cursor: pointer;
+            transition: box-shadow 0.2s;
+        }
+        .spaced-badge:hover { box-shadow: 0 0 12px rgba(188,0,255,0.4); }
+        .spaced-badge input[type="checkbox"] {
+            width: 20px; height: 20px; margin: 0; accent-color: #bc00ff; flex-shrink: 0;
+        }
+        .spaced-badge-text { display: flex; flex-direction: column; gap: 2px; flex: 1; }
+        .spaced-badge-title {
+            font-size: 0.92rem;
+            font-weight: bold;
+            color: #bc00ff;
+            text-shadow: 0 0 8px rgba(188,0,255,0.6);
+        }
+        .spaced-badge-sub {
+            font-size: 0.68rem;
+            color: #a78bfa;
+            line-height: 1.4;
+        }
+        .spaced-badge-recommend {
+            font-size: 0.62rem;
+            background: linear-gradient(90deg, #bc00ff, #00f2ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        /* ===== エクスポート/インポートボタン ===== */
+        .io-btn-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .io-btn-row button {
+            flex: 1;
+            font-size: 0.78rem;
+            padding: 10px 6px;
+            margin-bottom: 0;
+        }
+
+        /* ===== チュートリアルオーバーレイ ===== */
+        #tutorial-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(2,6,23,0.96);
+            z-index: 3000;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        #tutorial-overlay.show { display: flex; animation: fadeIn 0.3s ease; }
+        .tut-card {
+            background: var(--panel);
+            border: 1px solid var(--accent);
+            border-radius: 16px;
+            padding: 28px 24px;
+            max-width: 460px;
+            width: 100%;
+            text-align: center;
+        }
+        .tut-step-num {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.7rem;
+            color: var(--accent);
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+        }
+        .tut-icon { font-size: 2.8rem; margin-bottom: 12px; }
+        .tut-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--accent);
+            margin-bottom: 12px;
+        }
+        .tut-body {
+            font-size: 0.88rem;
+            color: #a0aec0;
+            line-height: 1.75;
+            margin-bottom: 22px;
+            text-align: left;
+        }
+        .tut-body b { color: var(--text); }
+        .tut-dots {
+            display: flex; justify-content: center; gap: 8px; margin-bottom: 20px;
+        }
+        .tut-dot {
+            width: 8px; height: 8px; border-radius: 50%;
+            background: #334155;
+            transition: background 0.2s;
+        }
+        .tut-dot.active { background: var(--accent); box-shadow: 0 0 6px var(--accent); }
+        .tut-btn-row { display: flex; gap: 10px; }
+        .tut-btn-row button { margin-bottom: 0; }
     </style>
 </head>
 <body>
@@ -102,9 +231,16 @@
     <div onclick="switchView('settings')" id="nav-settings">1. 教材登録</div>
     <div onclick="switchView('progress')" id="nav-progress">2. 進捗入力</div>
     <div onclick="switchView('plan')" id="nav-plan">3. 計画表</div>
+    <div onclick="showTutorial()" class="nav-tut">？使い方</div>
 </nav>
 
 <div id="view-home" class="view active">
+    <!-- タイトルブロック -->
+    <div class="home-title-block">
+        <div class="app-logo">ReplanToWin</div>
+        <div class="app-tagline">AI-Powered Study Scheduler</div>
+    </div>
+
     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
         <div class="glass-card" style="text-align: center;">
             <small style="opacity:0.6;">全体の進捗</small>
@@ -130,6 +266,16 @@
     </div>
 
     <button id="main-plan-btn" onclick="generatePlan()" class="secondary">✨ AI学習計画を生成する</button>
+
+    <div class="glass-card">
+        <h3 style="font-size:0.9rem;">📅 計画データ（Google カレンダー連携）</h3>
+        <p style="font-size:0.78rem; color:#a0aec0; margin:0 0 6px;">ICS形式でエクスポートし、Googleカレンダーに「終日タスク」として読み込めます。</p>
+        <div class="io-btn-row">
+            <button class="secondary" onclick="exportICS()" style="font-size:0.78rem;">⬆ ICSエクスポート</button>
+            <button class="secondary" onclick="document.getElementById('ics-import-input').click()" style="font-size:0.78rem;">⬇ ICSインポート</button>
+        </div>
+        <input type="file" id="ics-import-input" accept=".ics" style="display:none;" onchange="importICS(this)">
+    </div>
 </div>
 
 <div id="view-settings" class="view">
@@ -179,11 +325,17 @@
             <input id="in-rounds" type="number" value="3" style="width: 80px; margin: 0;">
         </div>
 
-        <!-- 小刻み復習チェックボックス -->
-        <label id="spaced-label" style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px; font-size: 0.9rem; color: var(--accent);">
-            <input type="checkbox" id="in-spaced" style="width: 20px; height: 20px; margin: 0; accent-color: var(--accent);"> 🔥 小刻みに復習 (学習効果が高い)
+        <!-- ▼▼▼ 変更点2: 間隔反復学習バッジの説明文 ▼▼▼ -->
+        <label id="spaced-label" class="spaced-badge" style="margin-bottom: 15px;">
+            <input type="checkbox" id="in-spaced">
+            <span class="spaced-badge-text">
+                <span class="spaced-badge-title">⚡ 間隔反復学習（スペーシング効果）</span>
+                <span class="spaced-badge-sub">「小刻みな復習」を繰り返す記憶定着アルゴリズム。<br><b>単語帳・問題集など量の多いタスクに特に推奨。</b><br>単純繰り返しより最大 <b>2〜3倍</b> の記憶効率を実現。</span>
+            </span>
+            <span class="spaced-badge-recommend">強く推奨</span>
             <span id="spaced-note" style="display: none; color: var(--danger); font-size: 0.7rem;">※リスト教材では非対応</span>
         </label>
+        <!-- ▲▲▲ 変更点2 ここまで ▲▲▲ -->
 
         <button onclick="addMaterial()">この教材をリストに登録する</button>
     </div>
@@ -206,7 +358,205 @@
     <div id="full-plan-area"></div>
 </div>
 
+<!-- ===== チュートリアルオーバーレイ ===== -->
+<div id="tutorial-overlay">
+    <div class="tut-card">
+        <div class="tut-step-num" id="tut-step-label">STEP 1 / 4</div>
+        <div class="tut-icon" id="tut-icon">📚</div>
+        <div class="tut-title" id="tut-title"></div>
+        <div class="tut-body" id="tut-body"></div>
+        <div class="tut-dots" id="tut-dots"></div>
+        <div class="tut-btn-row">
+            <button class="secondary" id="tut-prev-btn" onclick="tutPrev()" style="display:none;">← 戻る</button>
+            <button id="tut-next-btn" onclick="tutNext()">次へ →</button>
+        </div>
+    </div>
+</div>
+
 <script>
+// ===== TUTORIAL =====
+const TUT_STEPS = [
+    {
+        icon: '🚀',
+        title: 'ReplanToWin へようこそ！',
+        body: `AI が学習スケジュールを自動生成するアプリです。<br><br>
+<b>基本の流れ：</b><br>
+① <b>教材を登録</b> する（科目・範囲・試験日）<br>
+② <b>AI が計画を生成</b> する<br>
+③ <b>毎日の進捗</b> を記録する<br>
+④ AI が<b>計画を自動更新</b> する`
+    },
+    {
+        icon: '📖',
+        title: 'STEP 1 ── 教材を登録する',
+        body: `「<b>1. 教材登録</b>」タブへ移動します。<br><br>
+・ <b>科目名</b>（例: 英語）と<b>試験日</b>を入力<br>
+・ <b>教材の種類</b>を選択：<br>
+　　<b>ページ範囲</b>（例: 1-200P）<br>
+　　<b>合計件数</b>（例: 1500語）<br>
+　　<b>項目リスト</b>（例: 単語帳の項目）<br>
+・ <b>学習する曜日</b>と<b>目標周回数</b>を設定<br><br>
+⚡ <b>間隔反復学習</b>は記憶効率が大幅に上がるため<b>強く推奨</b>です！`
+    },
+    {
+        icon: '✨',
+        title: 'STEP 2 ── AI 計画を生成する',
+        body: `教材を登録したら、<b>ホーム画面</b>へ戻ります。<br><br>
+・ <b>「計画再開/開始日」</b>を確認（デフォルトは今日）<br>
+・ <b>「AI学習計画を生成する」</b>ボタンを押す<br><br>
+AI が試験日から逆算し、全日程のスケジュールを自動生成します。<br><br>
+進捗を記録した後に<b>再生成</b>すると、残り分だけ再スケジューリングされます。`
+    },
+    {
+        icon: '📅',
+        title: 'STEP 3 ── Google カレンダーに取り込む',
+        body: `<b>「3. 計画表」</b>タブまたはホームの<b>「ICSエクスポート」</b>ボタンで<br>計画を <b>.ics ファイル</b>としてダウンロードできます。<br><br>
+<b>Google カレンダーへの取り込み手順：</b><br>
+① Google カレンダーを開く<br>
+② 設定 → 「インポート」を選択<br>
+③ ダウンロードした .ics ファイルを選択<br>
+④ 各学習タスクが<b>終日イベント</b>として追加されます。<br><br>
+進捗を記録して計画を更新したら、再度エクスポートしてください。`
+    }
+];
+let tutStep = 0;
+
+function showTutorial() {
+    tutStep = 0;
+    renderTut();
+    document.getElementById('tutorial-overlay').classList.add('show');
+}
+
+function closeTutorial() {
+    document.getElementById('tutorial-overlay').classList.remove('show');
+    localStorage.setItem('rtw_tut_done', '1');
+}
+
+function tutNext() {
+    if (tutStep < TUT_STEPS.length - 1) {
+        tutStep++;
+        renderTut();
+    } else {
+        closeTutorial();
+    }
+}
+
+function tutPrev() {
+    if (tutStep > 0) { tutStep--; renderTut(); }
+}
+
+function renderTut() {
+    const s = TUT_STEPS[tutStep];
+    const total = TUT_STEPS.length;
+    document.getElementById('tut-step-label').innerText = `STEP ${tutStep + 1} / ${total}`;
+    document.getElementById('tut-icon').innerText = s.icon;
+    document.getElementById('tut-title').innerText = s.title;
+    document.getElementById('tut-body').innerHTML = s.body;
+    const dots = document.getElementById('tut-dots');
+    dots.innerHTML = TUT_STEPS.map((_, i) => `<div class="tut-dot${i === tutStep ? ' active' : ''}"></div>`).join('');
+    document.getElementById('tut-prev-btn').style.display = tutStep > 0 ? 'block' : 'none';
+    document.getElementById('tut-next-btn').innerText = tutStep < total - 1 ? '次へ →' : '✔ 始める';
+}
+
+// ===== ICS EXPORT/IMPORT =====
+function escICS(s) {
+    return String(s).replace(/\\/g, '\\\\').replace(/;/g, '\\;').replace(/,/g, '\\,').replace(/\r?\n/g, '\\n');
+}
+
+function toICSDate(dateStr) {
+    return dateStr.replace(/-/g, '');
+}
+
+function exportICS() {
+    const planKeys = Object.keys(state.plan).sort();
+    if (planKeys.length === 0) return alert('エクスポートする計画がありません。先にAI計画を生成してください。');
+
+    const now = new Date();
+    const dtstamp = now.getFullYear()
+        + String(now.getMonth()+1).padStart(2,'0')
+        + String(now.getDate()).padStart(2,'0')
+        + 'T' + String(now.getHours()).padStart(2,'0')
+        + String(now.getMinutes()).padStart(2,'0')
+        + String(now.getSeconds()).padStart(2,'0') + 'Z';
+
+    let ics = [
+        'BEGIN:VCALENDAR',
+        'VERSION:2.0',
+        'PRODID:-//ReplanToWin//AI Study Scheduler//JA',
+        'CALSCALE:GREGORIAN',
+        'METHOD:PUBLISH'
+    ];
+
+    planKeys.forEach(dateStr => {
+        const tasks = state.plan[dateStr];
+        if (!tasks || tasks.length === 0) return;
+        const dateICS = toICSDate(dateStr);
+        const summary = tasks.map(t => `${t.sub}:${t.mat} ${t.desc}(${t.info})`).join(' / ');
+        const uid = `rtw-${dateStr}-${Date.now()}@replantowin`;
+        ics = ics.concat([
+            'BEGIN:VEVENT',
+            `DTSTART;VALUE=DATE:${dateICS}`,
+            `DTEND;VALUE=DATE:${dateICS}`,
+            `DTSTAMP:${dtstamp}`,
+            `UID:${uid}`,
+            `SUMMARY:${escICS(summary)}`,
+            `DESCRIPTION:${escICS(tasks.map(t=>`${t.sub} / ${t.mat}: ${t.desc} [${t.info}]`).join('\n'))}`,
+            'TRANSP:TRANSPARENT',
+            'END:VEVENT'
+        ]);
+    });
+
+    ics.push('END:VCALENDAR');
+    const blob = new Blob([ics.join('\r\n')], { type: 'text/calendar;charset=utf-8' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `ReplanToWin_${toYMD(new Date())}.ics`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+    playSound(800, 0.2);
+}
+
+function importICS(input) {
+    const file = input.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const text = e.target.result;
+            const newPlan = {};
+            const events = text.split('BEGIN:VEVENT').slice(1);
+            events.forEach(ev => {
+                const dtmatch = ev.match(/DTSTART(?:;VALUE=DATE)?:(\d{4})(\d{2})(\d{2})/);
+                const summatch = ev.match(/SUMMARY:(.+)/);
+                if (!dtmatch || !summatch) return;
+                const dateStr = `${dtmatch[1]}-${dtmatch[2]}-${dtmatch[3]}`;
+                const summaryRaw = summatch[1].replace(/\\n/g,'\n').replace(/\\,/g,',').replace(/\\;/g,';').replace(/\\\\/g,'\\').trim();
+                if (!newPlan[dateStr]) newPlan[dateStr] = [];
+                summaryRaw.split(' / ').forEach(item => {
+                    const m = item.match(/^([^:]+):(.+?)\s+(.+?)\((.+?)\)$/);
+                    if (m) {
+                        newPlan[dateStr].push({ sub: m[1].trim(), mat: m[2].trim(), desc: m[3].trim(), info: m[4].trim(), id: 0 });
+                    } else {
+                        newPlan[dateStr].push({ sub: 'インポート', mat: item, desc: '', info: '', id: 0 });
+                    }
+                });
+            });
+            const count = Object.keys(newPlan).length;
+            if (count === 0) { alert('有効なイベントが見つかりませんでした。'); return; }
+            if (!confirm(`${count}日分の計画をインポートします。\n現在の計画は上書きされます。よろしいですか？`)) return;
+            state.plan = newPlan;
+            save();
+            playSound(800, 0.2);
+            alert(`${count}日分の計画をインポートしました。`);
+        } catch(err) {
+            console.error(err);
+            alert('ICSファイルの読み込みに失敗しました。');
+        }
+        input.value = '';
+    };
+    reader.readAsText(file);
+}
+
 // --- AUDIO ENGINE ---
 let audioCtx;
 function playSound(f, d) {
@@ -326,7 +676,7 @@ function addMaterial() {
 
     let newMat;
     const common = { id: mId, rounds, days: selectedDays };
-    const spaced = document.getElementById('in-spaced').checked && mode !== 'list'; // リストでは無効
+    const spaced = document.getElementById('in-spaced').checked && mode !== 'list';
 
     if (mode === 'range') {
         let val = document.getElementById('in-val-range').value;
@@ -382,7 +732,6 @@ function generatePlan() {
                     if (availableDates.length === 0) availableDates.push(new Date(globalStart));
                     const daysCount = availableDates.length;
 
-                    // 小刻み復習アルゴリズム（範囲・合計件数タイプのみ）
                     if (mat.spaced && mat.type !== 'list') {
                         const totalUnits = mat.type === 'range' ? (mat.end - mat.start + 1) : mat.total;
                         const totalAmount = totalUnits * mat.rounds;
@@ -391,9 +740,7 @@ function generatePlan() {
                         if (chunkSize < 1) chunkSize = 1;
                         const numChunks = Math.ceil(totalUnits / chunkSize);
 
-                        // 最低限必要な日数: 各チャンクの (R-1) 日 + 最終周に最低1日
                         if (daysCount >= numChunks * (mat.rounds - 1) + 1) {
-                            // チャンクを構築
                             let chunks = [];
                             let unit = mat.unit || '';
                             for (let i = 0; i < numChunks; i++) {
@@ -410,7 +757,6 @@ function generatePlan() {
 
                             let dayIdx = 0;
 
-                            // ステップ2: 各チャンクを (R-1) 回連続で学習
                             for (let i = 0; i < numChunks; i++) {
                                 for (let r = 1; r < mat.rounds; r++) {
                                     if (dayIdx >= daysCount) break;
@@ -428,7 +774,6 @@ function generatePlan() {
                                 }
                             }
 
-                            // ステップ3: 最終周（全チャンクを1回ずつ）
                             let remainingDays = daysCount - dayIdx;
                             if (remainingDays > 0) {
                                 for (let i = 0; i < numChunks; i++) {
@@ -451,7 +796,6 @@ function generatePlan() {
                                     });
                                 }
                             } else {
-                                // 最終日が残っていなければ最終日にまとめる
                                 let lastIdx = daysCount - 1;
                                 const k = toYMD(availableDates[lastIdx]);
                                 for (let i = 0; i < numChunks; i++) {
@@ -465,12 +809,10 @@ function generatePlan() {
                                     });
                                 }
                             }
-                            return; // 通常の処理をスキップ
+                            return;
                         }
-                        // 日数不足の場合は通常処理にフォールバック
                     }
 
-                    // 通常のアルゴリズム
                     if (mat.type === 'list') {
                         let queue = [];
                         for (let r = 1; r <= mat.rounds; r++) {
@@ -598,9 +940,15 @@ function render() {
     const tasks = state.plan[today] || [];
     document.getElementById('today-list').innerHTML = tasks.length ? tasks.map(t => `<div class="item-row"><div><small>${t.sub}</small><br><b>${t.mat}: ${t.desc}</b></div><span class="status-tag">${t.info}</span></div>`).join('') : '<p style="text-align:center; opacity:0.5;">予定なし</p>';
 
-    document.getElementById('registered-list').innerHTML = state.exams.map(e => e.materials.map(m => `<div class="item-row"><div><small>${e.subject}</small><br><b>${m.name}</b></div><button class="danger" onclick="deleteMat(${e.id}, ${m.id})">削除</button></div>`).join('')).join('') || '<p style="opacity:0.5;">登録なし</p>';
+    // ▼▼▼ 変更点1: 登録済み教材に試験日・間隔反復ステータスを表示 ▼▼▼
+    document.getElementById('registered-list').innerHTML = state.exams.map(e => e.materials.map(m => {
+        const spacedLabel = m.spaced
+            ? '<span style="font-size:0.65rem; background:linear-gradient(135deg,rgba(188,0,255,0.2),rgba(0,242,255,0.2)); border:1px solid rgba(188,0,255,0.5); color:#bc00ff; padding:1px 6px; border-radius:4px; margin-left:6px;">⚡ 間隔反復</span>'
+            : '<span style="font-size:0.65rem; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.15); color:#64748b; padding:1px 6px; border-radius:4px; margin-left:6px;">通常学習</span>';
+        return `<div class="item-row"><div><small>${e.subject}</small><br><b>${m.name}</b>${spacedLabel}<br><span style="font-size:0.72rem; color:#64748b; margin-top:3px; display:inline-block;">📅 試験日: ${e.date}　|　🔁 ${m.rounds}周</span></div><button class="danger" onclick="deleteMat(${e.id}, ${m.id})">削除</button></div>`;
+    }).join('')).join('') || '<p style="opacity:0.5;">登録なし</p>';
+    // ▲▲▲ 変更点1 ここまで ▲▲▲
 
-    // --- 進捗入力エリアの修正 ---
     document.getElementById('progress-input-area').innerHTML = state.exams.map(e => e.materials.map(m => {
         if (m.type === 'list') {
             return `<div class="glass-card"><h3>${m.name}</h3><div class="item-row"><span>一括</span><input type="number" onchange="updateProg(${m.id},-1,this.value)" style="width:80px;"><span>周</span></div>${m.items.map((it, idx) => `<div class="item-row"><span>${it.l}</span><input type="number" value="${it.d}" onchange="updateProg(${m.id},${idx},this.value)" style="width:60px;"></div>`).join('')}</div>`;
@@ -631,8 +979,11 @@ function render() {
 window.onload = () => {
     load();
     document.getElementById('sys-start-date').value = toYMD(new Date());
-    toggleMode(); // 初期UI状態を反映
+    toggleMode();
     render();
+    if (!localStorage.getItem('rtw_tut_done')) {
+        setTimeout(showTutorial, 400);
+    }
     if ('serviceWorker' in navigator) {
         const sw = "self.addEventListener('install',e=>e.waitUntil(self.skipWaiting()));self.addEventListener('activate',e=>e.waitUntil(self.clients.claim()));self.addEventListener('fetch',e=>{});";
         navigator.serviceWorker.register(URL.createObjectURL(new Blob([sw], {type: 'application/javascript'}))).catch(()=>{});
