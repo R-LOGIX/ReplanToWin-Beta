@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ReplanToWin - Chunk Edition</title>
+    <title>ReplanToWin</title>
+    <link rel="icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==" type="image/png">
+    <link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -15,10 +17,11 @@
             --danger: #ff4757;
             --success: #2ed573;
             --chunk-accent: #ff9f43;
-            --premium-gold: #ffd700;
         }
 
-        * { box-sizing: border-box; }
+        * {
+            box-sizing: border-box;
+        }
         body {
             background-color: var(--bg);
             background-image: radial-gradient(circle at 50% 50%, #0f172a 0%, #020617 100%);
@@ -29,7 +32,6 @@
             padding-bottom: 40px;
         }
 
-        /* Navigation */
         nav {
             display: flex;
             justify-content: space-around;
@@ -39,27 +41,48 @@
             position: sticky;
             top: 0;
             z-index: 1000;
+            flex-wrap: wrap;
+            gap: 4px;
         }
         nav div {
             cursor: pointer;
-            font-size: 0.75rem;
+            font-size: 0.68rem;
             color: #64748b;
             font-family: 'Orbitron';
             font-weight: bold;
+            letter-spacing: 1px;
             padding: 6px 10px;
             border-radius: 6px;
-            transition: 0.2s;
+            transition: all 0.2s;
+            white-space: nowrap;
         }
         nav div.active {
             color: var(--accent);
             text-shadow: 0 0 10px var(--accent);
             background: rgba(0, 242, 255, 0.08);
         }
+        nav div:hover {
+            color: #b0c4de;
+        }
 
-        /* Views */
-        .view { max-width: 800px; margin: 20px auto; padding: 0 20px; display: none; }
-        .view.active { display: block; animation: fadeIn 0.3s ease; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .view {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 0 20px;
+            display: none;
+        }
+        .view.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
 
         .glass-card {
             background: var(--panel);
@@ -67,61 +90,245 @@
             border-radius: 12px;
             padding: 20px;
             margin-bottom: 15px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
         }
 
-        h3 { font-size: 1rem; color: var(--accent); margin-top: 0; border-left: 3px solid var(--accent); padding-left: 10px; }
-        
-        /* Buttons & Inputs */
+        h3 {
+            font-size: 1rem;
+            color: var(--accent);
+            margin-top: 0;
+            border-left: 3px solid var(--accent);
+            padding-left: 10px;
+        }
+        h4 {
+            font-size: 0.9rem;
+            color: var(--accent);
+            margin: 0 0 8px 0;
+            border-bottom: 1px solid #333;
+            padding-bottom: 4px;
+        }
+
         button {
             background: linear-gradient(135deg, var(--accent), #0099ff);
-            color: #000; border: none; padding: 14px; border-radius: 8px;
-            font-weight: bold; cursor: pointer; width: 100%; font-size: 1rem;
-            margin-bottom: 10px; transition: 0.2s; font-family: 'Noto Sans JP';
-        }
-        button:active { transform: scale(0.98); }
-        button.secondary { background: transparent; border: 1px solid var(--accent); color: var(--accent); }
-        button.danger { background: rgba(255, 71, 87, 0.1); border: 1px solid var(--danger); color: var(--danger); width: auto; font-size: 0.8rem; padding: 6px 12px; }
-
-        input, select, textarea {
-            background: rgba(0, 0, 0, 0.6); border: 1px solid rgba(255, 255, 255, 0.2);
-            color: #fff; padding: 12px; border-radius: 8px; width: 100%; margin-bottom: 12px;
-        }
-
-        /* Specialized UI for Chunk Mode */
-        .chunk-highlight {
-            border: 1px solid var(--chunk-accent);
-            background: rgba(255, 159, 67, 0.05);
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 15px;
-        }
-        .benefit-tag {
-            background: var(--chunk-accent);
             color: #000;
-            font-size: 0.7rem;
-            padding: 2px 6px;
+            border: none;
+            padding: 16px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1rem;
+            margin-bottom: 10px;
+            transition: all 0.2s;
+            font-family: 'Noto Sans JP', sans-serif;
+        }
+        button:active {
+            transform: scale(0.98);
+        }
+        button.secondary {
+            background: transparent;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+        }
+        button.danger {
+            background: rgba(255, 71, 87, 0.1);
+            border: 1px solid var(--danger);
+            color: var(--danger);
+            padding: 8px 12px;
+            width: auto;
+            font-size: 0.8rem;
+            margin-bottom: 4px;
+        }
+        button.small {
+            padding: 6px 12px;
+            width: auto;
+            font-size: 0.75rem;
+            margin-bottom: 4px;
+        }
+
+        input,
+        select,
+        textarea {
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            padding: 12px;
+            border-radius: 8px;
+            width: 100%;
+            margin-bottom: 12px;
+            font-size: 1rem;
+            font-family: 'Noto Sans JP', sans-serif;
+        }
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 8px var(--accent-glow);
+        }
+        input[type="date"] {
+            color-scheme: dark;
+        }
+        input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            margin: 0;
+            accent-color: var(--accent);
+            cursor: pointer;
+        }
+
+        .plan-edit-input {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--accent);
+            color: #fff;
+            padding: 4px 8px;
+            border-radius: 4px;
+            width: 100%;
+            font-size: 0.9rem;
+            margin: 4px 0;
+        }
+
+        .item-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .item-row>div:first-child {
+            flex: 1;
+            min-width: 120px;
+        }
+        .status-tag {
+            font-size: 0.65rem;
+            background: var(--accent);
+            color: #000;
+            padding: 2px 8px;
             border-radius: 4px;
             font-weight: bold;
-            margin-bottom: 8px;
-            display: inline-block;
+            white-space: nowrap;
+        }
+        .status-tag.final {
+            background: var(--chunk-accent);
+            color: #000;
+        }
+        .status-tag.chunk {
+            background: #7c3aed;
+            color: #fff;
         }
 
-        .status-tag {
-            font-size: 0.65rem; padding: 2px 8px; border-radius: 4px; font-weight: bold;
+        .checkbox-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 8px;
         }
-        .tag-chunk { background: #7c3aed; color: #fff; }
-        .tag-final { background: var(--chunk-accent); color: #000; }
-
-        .task-item {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.05);
+        .checkbox-group label {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            color: #a0aec0;
+            user-select: none;
         }
 
         #loading {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(2, 6, 23, 0.95); z-index: 2000;
-            display: none; flex-direction: column; align-items: center; justify-content: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(2, 6, 23, 0.95);
+            z-index: 2000;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .chunk-badge {
+            display: inline-block;
+            background: rgba(124, 58, 237, 0.3);
+            color: #c4b5fd;
+            font-size: 0.7rem;
+            padding: 2px 8px;
+            border-radius: 10px;
+            margin-left: 6px;
+            font-weight: bold;
+        }
+        .chunk-progress-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+        }
+        .chunk-progress-row input {
+            width: 60px;
+            padding: 6px;
+            margin: 0;
+            font-size: 0.85rem;
+            text-align: center;
+        }
+        .chunk-label {
+            font-size: 0.8rem;
+            color: #c4b5fd;
+            min-width: 80px;
+            font-weight: bold;
+        }
+        .round-label {
+            font-size: 0.7rem;
+            color: #94a3b8;
+            min-width: 50px;
+            text-align: center;
+        }
+        .chunk-size-info {
+            font-size: 0.7rem;
+            color: #94a3b8;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.1);
+                opacity: 0.7;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 500px) {
+            .view {
+                padding: 0 10px;
+            }
+            nav div {
+                font-size: 0.6rem;
+                padding: 4px 6px;
+                letter-spacing: 0.5px;
+            }
+            .chunk-progress-row {
+                gap: 4px;
+            }
+            .chunk-progress-row input {
+                width: 44px;
+                font-size: 0.75rem;
+            }
+            .chunk-label {
+                min-width: 60px;
+                font-size: 0.7rem;
+            }
+            .round-label {
+                min-width: 36px;
+                font-size: 0.65rem;
+            }
         }
     </style>
 </head>
@@ -129,359 +336,477 @@
 
     <div id="loading">
         <div style="font-size: 3rem; animation: pulse 1s infinite;">⚡</div>
-        <div style="font-family: 'Orbitron'; color: var(--accent); letter-spacing: 3px; margin-top: 15px;">CALCULATING...</div>
+        <div style="font-family: 'Orbitron'; color: var(--accent); letter-spacing: 3px; margin-top: 15px;">AI GENERATING...</div>
     </div>
 
     <nav>
-        <div onclick="switchView('home')" id="nav-home" class="active">HOME</div>
-        <div onclick="switchView('settings')" id="nav-settings">1. 登録</div>
-        <div onclick="switchView('progress')" id="nav-progress">2. 記録</div>
-        <div onclick="switchView('plan')" id="nav-plan">3. 計画</div>
+        <div onclick="switchView('home')" id="nav-home" class="active">ホーム</div>
+        <div onclick="switchView('settings')" id="nav-settings">1. 教材登録</div>
+        <div onclick="switchView('progress')" id="nav-progress">2. 進捗入力</div>
+        <div onclick="switchView('plan')" id="nav-plan">3. 計画表</div>
     </nav>
 
     <div id="view-home" class="view active">
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
             <div class="glass-card" style="text-align: center;">
-                <small style="opacity:0.6;">全体進捗</small>
-                <div id="stat-progress" style="font-family: 'Orbitron'; font-size: 1.8rem; color: var(--accent);">0%</div>
+                <small style="opacity:0.6;">全体の進捗</small>
+                <div id="stat-progress" style="font-family: 'Orbitron'; font-size: 2rem; color: var(--accent);">0%</div>
             </div>
             <div class="glass-card" style="text-align: center;">
-                <small style="opacity:0.6;">試験まで</small>
-                <div id="stat-days" style="font-family: 'Orbitron'; font-size: 1.8rem; color: #bc00ff;">--</div>
+                <small style="opacity:0.6;">最短の試験まで</small>
+                <div id="stat-days" style="font-family: 'Orbitron'; font-size: 2rem; color: #bc00ff;">--</div>
             </div>
         </div>
         <div class="glass-card">
-            <h3>本日のミッション</h3>
+            <h3>本日の学習タスク</h3>
             <div id="today-list"></div>
         </div>
-        <button id="main-plan-btn" onclick="generatePlan()" class="secondary">✨ AI学習計画を最適化する</button>
+        <button onclick="switchView('progress')">今日の進捗を記録する</button>
+
+        <div class="glass-card" style="margin-bottom: 15px;">
+            <h3 style="font-size: 0.9rem; margin-bottom: 10px;">AI スケジューリング設定</h3>
+            <div class="item-row" style="padding: 5px 0; border: none;">
+                <span style="font-size: 0.9rem;">計画再開/開始日</span>
+                <input type="date" id="sys-start-date" style="width: auto; margin: 0; padding: 8px;">
+            </div>
+        </div>
+
+        <button id="main-plan-btn" onclick="generatePlan()" class="secondary">✨ AI学習計画を生成する</button>
     </div>
 
     <div id="view-settings" class="view">
         <div class="glass-card">
-            <h3>教材の登録</h3>
-            <input id="in-sub" placeholder="科目・教材名 (例: 英単語ターゲット1900)">
-            
-            <label style="font-size: 0.8rem; color: var(--accent);">完了目標日（試験日など）：</label>
-            <input id="in-date" type="date">
+            <h3>新しい教材を追加する</h3>
+            <input id="in-sub" placeholder="科目 (例: 数学、英語)">
 
-            <label style="font-size: 0.8rem; color: var(--accent);">学習する曜日：</label>
-            <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 15px;">
-                <label><input type="checkbox" class="in-day" value="1" checked>月</label>
-                <label><input type="checkbox" class="in-day" value="2" checked>火</label>
-                <label><input type="checkbox" class="in-day" value="3" checked>水</label>
-                <label><input type="checkbox" class="in-day" value="4" checked>木</label>
-                <label><input type="checkbox" class="in-day" value="5" checked>金</label>
-                <label><input type="checkbox" class="in-day" value="6" checked>土</label>
-                <label><input type="checkbox" class="in-day" value="0" checked>日</label>
+            <div style="margin-bottom: 12px;">
+                <label style="font-size: 0.8rem; color: var(--accent); display: block; margin-bottom: 4px;">試験日（または完了目標日）：</label>
+                <input id="in-date" type="date" style="margin-bottom: 0;">
             </div>
 
-            <label style="font-size: 0.8rem; color: var(--accent);">全ボリューム（数値で入力）：</label>
-            <div style="display: flex; gap: 10px;">
-                <input id="in-vol" type="number" placeholder="例: 1500" style="flex: 2;">
-                <input id="in-unit" placeholder="単位(語/P)" value="P" style="flex: 1;">
+            <div style="margin-bottom: 15px;">
+                <label style="font-size: 0.8rem; color: var(--accent); display: block; margin-bottom: 4px;">この教材を学習する曜日：</label>
+                <div class="checkbox-group" id="in-days">
+                    <label><input type="checkbox" value="1" checked>月</label>
+                    <label><input type="checkbox" value="2" checked>火</label>
+                    <label><input type="checkbox" value="3" checked>水</label>
+                    <label><input type="checkbox" value="4" checked>木</label>
+                    <label><input type="checkbox" value="5" checked>金</label>
+                    <label><input type="checkbox" value="6" checked>土</label>
+                    <label><input type="checkbox" value="0" checked>日</label>
+                </div>
             </div>
 
-            <div class="chunk-highlight">
-                <div class="benefit-tag">記憶定着率UP</div>
-                <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; font-weight: bold; color: var(--chunk-accent);">
-                    <input type="checkbox" id="in-chunk-mode" style="width: 20px; height: 20px; margin: 0;">
-                    小刻み復習モードを有効にする
+            <select id="in-mode" onchange="toggleMode()">
+                <option value="range">ページ範囲 (1-200 など)</option>
+                <option value="vol">合計件数 (1500語 など)</option>
+                <option value="list">項目リスト (プリントAなど)</option>
+            </select>
+            <div id="ui-range">
+                <input id="in-name-range" placeholder="教材名">
+                <input id="in-val-range" placeholder="範囲 (例: 1-150)">
+                <input id="in-unit-range" value="P" placeholder="単位">
+            </div>
+            <div id="ui-vol" style="display:none;">
+                <input id="in-name-vol" placeholder="教材名">
+                <input id="in-val-vol" type="number" placeholder="合計件数">
+                <input id="in-unit-vol" value="語" placeholder="単位">
+            </div>
+            <div id="ui-list" style="display:none;">
+                <input id="in-name-list" placeholder="教材名">
+                <textarea id="in-val-list" placeholder="項目をカンマ(,)で区切って入力" rows="3"></textarea>
+            </div>
+
+            <div id="chunk-mode-area" style="margin-top: 8px; margin-bottom: 8px; padding: 12px; border: 2px solid var(--chunk-accent); border-radius: 8px; background: rgba(255,159,67,0.08);">
+                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 0.95rem; color: var(--chunk-accent); font-weight: bold;">
+                    <input type="checkbox" id="in-chunk-mode" onchange="toggleChunkSize()" style="width: 22px; height: 22px; margin: 0; accent-color: var(--chunk-accent);">
+                    🔄 小刻み復習モード (推奨)
                 </label>
-                <p style="font-size: 0.75rem; color: #94a3b8; margin: 10px 0 0 30px; line-height: 1.4;">
-                    1つの範囲を数日間連続で学習し、脳に深く刻み込みます。AIが目標日に間に合う最適な分割サイズを自動計算します。
+                <p style="font-size: 0.75rem; color: #fff; margin: 8px 0 0 30px; line-height: 1.4;">
+                    <strong style="color: var(--chunk-accent);">【学習効果・極大】</strong><br>
+                    一定範囲を数日間連続で復習して定着させ、最後に総仕上げを行います。忘却曲線に基づき、同じ内容を脳に刻み込む最強の学習法です。
                 </p>
+                <div id="chunk-size-area" style="display: none; margin-top: 10px; margin-left: 30px; font-size: 0.8rem; color: #c4b5fd;">
+                    ✨ チャンクサイズは学習期間に合わせてAIが自動最適化します
+                </div>
             </div>
 
-            <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px; margin-top: 10px;">
                 <span>目標周回数:</span>
-                <input id="in-rounds" type="number" value="3" min="2" style="width: 80px; margin: 0;">
+                <input id="in-rounds" type="number" value="3" min="1" style="width: 80px; margin: 0;">
             </div>
-
-            <button onclick="addMaterial()">この教材をリストに追加</button>
+            <button onclick="addMaterial()">この教材をリストに登録する</button>
         </div>
-
         <div class="glass-card">
-            <h3>登録済み教材</h3>
+            <h3>登録済みの教材</h3>
             <div id="registered-list"></div>
         </div>
     </div>
 
     <div id="view-progress" class="view">
-        <div class="glass-card">
-            <h3>進捗を記録する</h3>
-            <p style="font-size: 0.8rem; opacity: 0.7;">完了したタスクにチェックを入れて保存してください。</p>
-            <div id="progress-list"></div>
-            <button onclick="saveProgress()" style="margin-top: 15px;">進捗を保存する</button>
-        </div>
+        <h3>進捗の報告</h3>
+        <div id="progress-input-area"></div>
     </div>
 
     <div id="view-plan" class="view">
-        <div class="glass-card">
-            <h3>全日程の計画表</h3>
-            <div id="full-plan-area"></div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <h3 style="margin: 0;">全日程の計画表</h3>
+            <button id="btn-edit-plan" onclick="togglePlanEdit()" class="secondary" style="width: auto; padding: 6px 15px; margin: 0; font-size: 0.8rem;">✎ 編集</button>
         </div>
+        <div id="full-plan-area"></div>
     </div>
 
     <script>
-        // --- 1. DATA STRUCTURE ---
-        let state = {
-            materials: [],
-            plan: {}, // date -> tasks
-            progress: {} // date_taskId -> boolean
-        };
+        // --- AUDIO ENGINE ---
+        let audioCtx;
 
-        const KEY = 'replan_win_v8_final';
+        function playSound(f, d) {
+            try {
+                if (!audioCtx) audioCtx = new(window.AudioContext || window.webkitAudioContext)();
+                const o = audioCtx.createOscillator();
+                const g = audioCtx.createGain();
+                o.connect(g);
+                g.connect(audioCtx.destination);
+                o.frequency.setValueAtTime(f, audioCtx.currentTime);
+                g.gain.setValueAtTime(0.05, audioCtx.currentTime);
+                g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + d);
+                o.start();
+                o.stop(audioCtx.currentTime + d);
+            } catch (e) {}
+        }
+
+        // --- HELPER ---
+        function toYMD(d) {
+            return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+        }
+
+        // --- DATA ---
+        const KEY = 'test_os_v7_chunk_data';
+        let state = { exams: [], plan: {}, startDate: toYMD(new Date()) };
+        let isPlanEditing = false;
 
         function load() {
             const saved = localStorage.getItem(KEY);
-            if (saved) state = JSON.parse(saved);
-            render();
+            if (saved) {
+                try {
+                    state = JSON.parse(saved);
+                } catch (e) {
+                    console.error('Data parse error', e);
+                    state = { exams: [], plan: {}, startDate: toYMD(new Date()) };
+                }
+            }
+            if (!state.exams) state.exams = [];
+            if (!state.plan) state.plan = {};
+            if (!state.startDate) state.startDate = toYMD(new Date());
+            document.getElementById('sys-start-date').value = state.startDate;
         }
 
         function save() {
-            localStorage.setItem(KEY, JSON.stringify(state));
+            state.startDate = document.getElementById('sys-start-date').value;
+            try {
+                localStorage.setItem(KEY, JSON.stringify(state));
+            } catch (e) {
+                console.error('Storage Save Error', e);
+            }
             render();
         }
 
-        // --- 2. LOGIC: SCHEDULING ---
+        function toggleMode() {
+            const m = document.getElementById('in-mode').value;
+            ['ui-range', 'ui-vol', 'ui-list'].forEach(id => {
+                document.getElementById(id).style.display = (id === 'ui-' + m) ? 'block' : 'none';
+            });
+        }
+
+        function toggleChunkSize() {
+            const checked = document.getElementById('in-chunk-mode').checked;
+            document.getElementById('chunk-size-area').style.display = checked ? 'block' : 'none';
+        }
 
         function addMaterial() {
             const sub = document.getElementById('in-sub').value;
             const date = document.getElementById('in-date').value;
-            const vol = parseInt(document.getElementById('in-vol').value);
-            const unit = document.getElementById('in-unit').value;
-            const rounds = parseInt(document.getElementById('in-rounds').value);
+            const rounds = parseInt(document.getElementById('in-rounds').value) || 1;
             const chunkMode = document.getElementById('in-chunk-mode').checked;
-            const days = Array.from(document.querySelectorAll('.in-day:checked')).map(el => parseInt(el.value));
+            
+            const daysEls = document.querySelectorAll('#in-days input:checked');
+            const studyDays = Array.from(daysEls).map(el => parseInt(el.value));
 
-            if (!sub || !date || isNaN(vol)) return alert('入力を確認してください');
+            if (!sub || !date) return alert('科目と試験日を入力してください');
 
-            state.materials.push({
+            const mode = document.getElementById('in-mode').value;
+            let mName, mVal, mUnit, mType;
+
+            if (mode === 'range') {
+                mName = document.getElementById('in-name-range').value;
+                mVal = document.getElementById('in-val-range').value;
+                mUnit = document.getElementById('in-unit-range').value;
+                mType = 'range';
+            } else if (mode === 'vol') {
+                mName = document.getElementById('in-name-vol').value;
+                mVal = document.getElementById('in-val-vol').value;
+                mUnit = document.getElementById('in-unit-vol').value;
+                mType = 'vol';
+            } else {
+                mName = document.getElementById('in-name-list').value;
+                mVal = document.getElementById('in-val-list').value;
+                mUnit = '項目';
+                mType = 'list';
+            }
+
+            const material = {
                 id: Date.now(),
-                sub, targetDate: date, vol, unit, rounds, chunkMode, activeDays: days
-            });
+                name: mName || sub,
+                sub: sub,
+                date: date,
+                type: mType,
+                val: mVal,
+                unit: mUnit,
+                rounds: rounds,
+                studyDays: studyDays,
+                chunkMode: chunkMode,
+                progress: 0
+            };
 
+            state.exams.push(material);
             save();
-            alert('登録しました。ホームから「計画を最適化」してください。');
-            switchView('home');
+            playSound(880, 0.1);
         }
 
+        function deleteMaterial(id) {
+            state.exams = state.exams.filter(e => e.id !== id);
+            save();
+        }
+
+        // --- CORE ALGORITHM ---
         function generatePlan() {
-            const loading = document.getElementById('loading');
-            loading.style.display = 'flex';
-
+            const startStr = document.getElementById('sys-start-date').value;
+            if (!startStr) return alert('開始日を設定してください');
+            
+            document.getElementById('loading').style.display = 'flex';
+            
             setTimeout(() => {
-                state.plan = {};
-                const today = new Date();
-                today.setHours(0,0,0,0);
+                const plan = {};
+                const start = new Date(startStr);
 
-                state.materials.forEach(m => {
-                    const studyDates = getAvailableDates(today, new Date(m.targetDate), m.activeDays);
-                    if (studyDates.length === 0) return;
+                state.exams.forEach(ex => {
+                    const items = parseMaterialItems(ex);
+                    const totalItems = items.length;
+                    const availableDates = getAvailableDates(start, new Date(ex.date), ex.studyDays);
+                    
+                    if (availableDates.length === 0) return;
 
-                    if (m.chunkMode) {
-                        // アルゴリズム: 小刻み復習
-                        // 1チャンクにつき (Rounds-1)日の連続学習 + 最終1日の合計 Rounds日必要
-                        // 全体で D日ある場合、最大で作れるチャンク数は D / Rounds
-                        const maxChunks = Math.max(1, Math.floor(studyDates.length / m.rounds));
-                        const chunkSize = Math.ceil(m.vol / maxChunks);
+                    if (ex.chunkMode) {
+                        // 小刻み復習モードのロジック
+                        // 1チャンクを (rounds-1)回連続 + 最終1回の計 rounds個のタスクにする
+                        // 同日に同じチャンクの異なる周回が重ならないよう、
+                        // 総タスク数 (Chunks * Rounds) <= 利用可能日数 となる最小の x を選ぶ
+                        const D = availableDates.length;
+                        const R = ex.rounds;
+                        const maxChunks = Math.max(1, Math.floor(D / R));
+                        const chunkSize = Math.ceil(totalItems / maxChunks);
                         
-                        let dateIdx = 0;
-                        // フェーズ1: 連続学習
-                        for (let c = 0; c < maxChunks; c++) {
-                            const start = c * chunkSize + 1;
-                            const end = Math.min((c + 1) * chunkSize, m.vol);
-                            if (start > m.vol) break;
-
-                            for (let r = 1; r < m.rounds; r++) {
-                                if (dateIdx >= studyDates.length) break;
-                                addTask(studyDates[dateIdx], {
-                                    sub: m.sub,
-                                    range: `${start}-${end}${m.unit}`,
-                                    label: `${r}周目`,
-                                    isFinal: false
-                                });
-                                dateIdx++;
-                            }
+                        const chunks = [];
+                        for (let i = 0; i < totalItems; i += chunkSize) {
+                            chunks.push(items.slice(i, i + chunkSize));
                         }
 
-                        // フェーズ2: 最終周 (1回ずつ)
-                        for (let c = 0; c < maxChunks; c++) {
-                            const start = c * chunkSize + 1;
-                            const end = Math.min((c + 1) * chunkSize, m.vol);
-                            if (start > m.vol) break;
-                            if (dateIdx >= studyDates.length) break;
-
-                            addTask(studyDates[dateIdx], {
-                                sub: m.sub,
-                                range: `${start}-${end}${m.unit}`,
-                                label: `最終確認`,
-                                isFinal: true
+                        let taskQueue = [];
+                        // Step 1: (R-1)回連続学習
+                        if (R > 1) {
+                            chunks.forEach((chunk, cIdx) => {
+                                for (let r = 1; r < R; r++) {
+                                    taskQueue.push({
+                                        sub: ex.sub,
+                                        name: ex.name,
+                                        range: `${chunk[0]}〜${chunk[chunk.length - 1]}`,
+                                        round: r,
+                                        isFinal: false,
+                                        isChunk: true
+                                    });
+                                }
                             });
-                            dateIdx++;
                         }
+                        // Step 2: 最後の1周（全チャンクを1回ずつ）
+                        chunks.forEach((chunk, cIdx) => {
+                            taskQueue.push({
+                                sub: ex.sub,
+                                name: ex.name,
+                                range: `${chunk[0]}〜${chunk[chunk.length - 1]}`,
+                                round: R,
+                                isFinal: true,
+                                isChunk: true
+                            });
+                        });
+
+                        // 日付に割り当て
+                        taskQueue.forEach((task, index) => {
+                            if (index < availableDates.length) {
+                                const dStr = availableDates[index];
+                                if (!plan[dStr]) plan[dStr] = [];
+                                plan[dStr].push(task);
+                            }
+                        });
 
                     } else {
-                        // 通常モード: 単純分散
-                        const totalTasks = m.vol * m.rounds;
-                        const perDay = Math.ceil(totalTasks / studyDates.length);
-                        let currentTotal = 0;
-
-                        studyDates.forEach(d => {
-                            const start = (currentTotal % m.vol) + 1;
-                            let end = start + perDay - 1;
-                            const roundNum = Math.floor(currentTotal / m.vol) + 1;
-                            
-                            addTask(d, {
-                                sub: m.sub,
-                                range: `${start}-${Math.min(end, m.vol)}${m.unit}`,
-                                label: `${roundNum}周目`,
-                                isFinal: roundNum === m.rounds
-                            });
-                            currentTotal += perDay;
+                        // 通常モード
+                        const totalTasks = totalItems * ex.rounds;
+                        const pace = totalTasks / availableDates.length;
+                        
+                        let currentIdx = 0;
+                        availableDates.forEach((dStr, dIdx) => {
+                            const todayTargetCount = Math.floor((dIdx + 1) * pace) - Math.floor(dIdx * pace);
+                            if (todayTargetCount > 0) {
+                                const startItem = items[currentIdx % totalItems];
+                                const endItem = items[(currentIdx + todayTargetCount - 1) % totalItems];
+                                const roundNum = Math.floor(currentIdx / totalItems) + 1;
+                                
+                                if (!plan[dStr]) plan[dStr] = [];
+                                plan[dStr].push({
+                                    sub: ex.sub,
+                                    name: ex.name,
+                                    range: `${startItem}〜${endItem}`,
+                                    round: roundNum,
+                                    isFinal: roundNum === ex.rounds,
+                                    isChunk: false
+                                });
+                                currentIdx += todayTargetCount;
+                            }
                         });
                     }
                 });
 
-                loading.style.display = 'none';
+                state.plan = plan;
+                document.getElementById('loading').style.display = 'none';
                 save();
+                switchView('plan');
+                playSound(1200, 0.2);
             }, 800);
         }
 
-        function getAvailableDates(start, end, activeDays) {
+        function parseMaterialItems(ex) {
+            let items = [];
+            if (ex.type === 'range') {
+                const parts = ex.val.split('-').map(Number);
+                if (parts.length === 2) {
+                    for (let i = parts[0]; i <= parts[1]; i++) items.push(i + ex.unit);
+                }
+            } else if (ex.type === 'vol') {
+                const vol = parseInt(ex.val);
+                for (let i = 1; i <= vol; i++) items.push(i + ex.unit);
+            } else {
+                items = ex.val.split(',').map(s => s.trim());
+            }
+            return items;
+        }
+
+        function getAvailableDates(start, end, studyDays) {
             const dates = [];
             let curr = new Date(start);
             while (curr <= end) {
-                if (activeDays.includes(curr.getDay())) {
-                    dates.push(new Date(curr).toISOString().split('T')[0]);
+                if (studyDays.includes(curr.getDay())) {
+                    dates.push(toYMD(curr));
                 }
                 curr.setDate(curr.getDate() + 1);
             }
             return dates;
         }
 
-        function addTask(dateStr, task) {
-            if (!state.plan[dateStr]) state.plan[dateStr] = [];
-            task.id = Math.random().toString(36).substr(2, 9);
-            state.plan[dateStr].push(task);
-        }
-
-        // --- 3. UI RENDERING ---
-
+        // --- VIEW CONTROL ---
         function switchView(id) {
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-            document.querySelectorAll('nav div').forEach(n => n.classList.remove('active'));
             document.getElementById('view-' + id).classList.add('active');
+            document.querySelectorAll('nav div').forEach(n => n.classList.remove('active'));
             document.getElementById('nav-' + id).classList.add('active');
+            window.scrollTo(0, 0);
+            render();
+        }
+
+        function togglePlanEdit() {
+            isPlanEditing = !isPlanEditing;
+            render();
+        }
+
+        function updatePlanText(date, idx, val) {
+            state.plan[date][idx].range = val;
+            localStorage.setItem(KEY, JSON.stringify(state));
         }
 
         function render() {
-            renderHome();
-            renderSettings();
-            renderProgress();
-            renderPlan();
-        }
-
-        function renderHome() {
-            const today = new Date().toISOString().split('T')[0];
-            const list = document.getElementById('today-list');
-            const tasks = state.plan[today] || [];
-
-            list.innerHTML = tasks.length ? '' : '<p style="opacity:0.5; text-align:center;">本日のタスクはありません</p>';
-            tasks.forEach(t => {
-                const isDone = state.progress[`${today}_${t.id}`];
-                list.innerHTML += `
-                    <div class="task-item" style="opacity: ${isDone ? 0.5 : 1}">
-                        <div>
-                            <div style="font-weight:bold;">${t.sub}</div>
-                            <small>${t.range} <span class="status-tag ${t.isFinal ? 'tag-final' : 'tag-chunk'}">${t.label}</span></small>
-                        </div>
-                        <div style="color: var(--accent); font-size: 1.2rem;">${isDone ? '✅' : '⚡'}</div>
-                    </div>
-                `;
-            });
-
             // Stats
-            const totalTasks = Object.values(state.plan).flat().length;
-            const doneTasks = Object.values(state.progress).filter(v => v).length;
-            document.getElementById('stat-progress').innerText = totalTasks ? Math.round((doneTasks/totalTasks)*100) + '%' : '0%';
-        }
+            const today = toYMD(new Date());
+            const daysLeft = state.exams.length > 0 ? 
+                Math.ceil((new Date(Math.min(...state.exams.map(e => new Date(e.date)))) - new Date()) / 86400000) : '--';
+            document.getElementById('stat-days').innerText = daysLeft > 0 ? daysLeft + 'd' : (daysLeft === 0 ? 'DAY' : '--');
 
-        function renderSettings() {
-            const list = document.getElementById('registered-list');
-            list.innerHTML = '';
-            state.materials.forEach((m, idx) => {
-                list.innerHTML += `
-                    <div style="border-bottom: 1px solid #333; padding: 10px 0;">
-                        <div style="display:flex; justify-content:space-between;">
-                            <strong>${m.sub}</strong>
-                            <button class="danger" onclick="deleteMaterial(${idx})">削除</button>
-                        </div>
-                        <small>${m.vol}${m.unit} / ${m.rounds}周 / ${m.chunkMode ? '小刻みモード' : '通常'}</small>
-                    </div>
-                `;
-            });
-        }
-
-        function renderProgress() {
-            const today = new Date().toISOString().split('T')[0];
-            const area = document.getElementById('progress-list');
-            const tasks = state.plan[today] || [];
-
-            area.innerHTML = tasks.length ? '' : '<p>本日のタスクはありません</p>';
-            tasks.forEach(t => {
-                const checked = state.progress[`${today}_${t.id}`] ? 'checked' : '';
-                area.innerHTML += `
-                    <label style="display:flex; align-items:center; gap:15px; background:rgba(255,255,255,0.05); padding:15px; border-radius:8px; margin-bottom:10px; cursor:pointer;">
-                        <input type="checkbox" style="width:22px; height:22px;" onchange="toggleTask('${today}', '${t.id}', this.checked)" ${checked}>
+            // Today Task
+            const todayList = document.getElementById('today-list');
+            todayList.innerHTML = '';
+            if (state.plan[today]) {
+                state.plan[today].forEach(t => {
+                    const div = document.createElement('div');
+                    div.className = 'item-row';
+                    div.innerHTML = `
                         <div>
-                            <div>${t.sub}</div>
-                            <small>${t.range} (${t.label})</small>
+                            <span class="status-tag ${t.isFinal?'final':(t.isChunk?'chunk':'')}">${t.round}周目</span>
+                            <strong style="margin-left:5px;">${t.sub}</strong><br>
+                            <small>${t.name}: ${t.range}</small>
                         </div>
-                    </label>
-                `;
-            });
-        }
-
-        function renderPlan() {
-            const area = document.getElementById('full-plan-area');
-            area.innerHTML = '';
-            const dates = Object.keys(state.plan).sort();
-
-            if (dates.length === 0) {
-                area.innerHTML = '<p style="text-align:center; opacity:0.5;">計画が生成されていません</p>';
-                return;
-            }
-
-            dates.forEach(d => {
-                let html = `<div style="margin-bottom:15px;"><h4 style="color:var(--accent); border-bottom:1px solid #333;">${d}</h4>`;
-                state.plan[d].forEach(t => {
-                    html += `<div style="font-size:0.85rem; padding:4px 0;">・${t.sub} : ${t.range} (${t.label})</div>`;
+                    `;
+                    todayList.appendChild(div);
                 });
-                html += `</div>`;
-                area.innerHTML += html;
+            } else {
+                todayList.innerHTML = '<p style="opacity:0.5; font-size:0.8rem;">本日のタスクはありません。計画を生成してください。</p>';
+            }
+
+            // Registered List
+            const regList = document.getElementById('registered-list');
+            regList.innerHTML = '';
+            state.exams.forEach(ex => {
+                const div = document.createElement('div');
+                div.className = 'item-row';
+                div.innerHTML = `
+                    <div>
+                        <strong>${ex.sub}</strong> <small>(${ex.date}まで)</small><br>
+                        <small>${ex.name} / ${ex.rounds}周 / ${ex.chunkMode ? '小刻み復習' : '通常'}</small>
+                    </div>
+                    <button class="danger" onclick="deleteMaterial(${ex.id})">削除</button>
+                `;
+                regList.appendChild(div);
+            });
+
+            // Full Plan
+            const planArea = document.getElementById('full-plan-area');
+            planArea.innerHTML = '';
+            const dates = Object.keys(state.plan).sort();
+            dates.forEach(d => {
+                const card = document.createElement('div');
+                card.className = 'glass-card';
+                card.style.padding = '12px';
+                let html = `<h4 style="font-family:'Orbitron'; font-size:0.8rem;">${d}</h4>`;
+                state.plan[d].forEach((t, i) => {
+                    if (isPlanEditing) {
+                        html += `
+                            <div style="margin-bottom:8px;">
+                                <small>${t.sub} ${t.round}周目</small>
+                                <input class="plan-edit-input" value="${t.range}" onchange="updatePlanText('${d}', ${i}, this.value)">
+                            </div>`;
+                    } else {
+                        html += `
+                            <div style="font-size:0.85rem; margin-bottom:4px; display:flex; justify-content:space-between;">
+                                <span><span class="status-tag ${t.isFinal?'final':(t.isChunk?'chunk':'')}" style="font-size:0.6rem;">${t.round}周</span> ${t.sub}</span>
+                                <span style="opacity:0.8;">${t.range}</span>
+                            </div>`;
+                    }
+                });
+                card.innerHTML = html;
+                planArea.appendChild(card);
             });
         }
 
-        function toggleTask(date, taskId, isChecked) {
-            state.progress[`${date}_${taskId}`] = isChecked;
-        }
-
-        function saveProgress() {
-            save();
-            alert('進捗を保存しました！');
-            switchView('home');
-        }
-
-        function deleteMaterial(idx) {
-            if (confirm('この教材を削除しますか？')) {
-                state.materials.splice(idx, 1);
-                save();
-            }
-        }
-
-        window.onload = load;
+        // Init
+        load();
+        render();
     </script>
 </body>
 </html>
