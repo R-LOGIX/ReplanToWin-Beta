@@ -427,7 +427,7 @@
                     一定範囲を数日間連続で復習して定着させ、最後に総仕上げを行います。忘却曲線に基づき、同じ内容を脳に刻み込む最強の学習法です。
                 </p>
                 <div id="chunk-size-area" style="display: none; margin-top: 10px; margin-left: 30px; font-size: 0.8rem; color: #c4b5fd;">
-                    ✨ チャンクサイズは学習期間に合わせてAIが自動最適化します
+                    ✨ チャンクサイズは試験日前日までに終わるようAIが自動最適化します
                 </div>
             </div>
 
@@ -597,10 +597,6 @@
                     if (availableDates.length === 0) return;
 
                     if (ex.chunkMode) {
-                        // 小刻み復習モードのロジック
-                        // 1チャンクを (rounds-1)回連続 + 最終1回の計 rounds個のタスクにする
-                        // 同日に同じチャンクの異なる周回が重ならないよう、
-                        // 総タスク数 (Chunks * Rounds) <= 利用可能日数 となる最小の x を選ぶ
                         const D = availableDates.length;
                         const R = ex.rounds;
                         const maxChunks = Math.max(1, Math.floor(D / R));
@@ -612,14 +608,14 @@
                         }
 
                         let taskQueue = [];
-                        // Step 1: (R-1)回連続学習
+                        // (R-1)回連続学習
                         if (R > 1) {
-                            chunks.forEach((chunk, cIdx) => {
+                            chunks.forEach((chunk) => {
                                 for (let r = 1; r < R; r++) {
                                     taskQueue.push({
                                         sub: ex.sub,
                                         name: ex.name,
-                                        range: `${chunk[0]}〜${chunk[chunk.length - 1]}`,
+                                        range: ex.type === 'list' ? chunk.join(', ') : `${chunk[0]}〜${chunk[chunk.length - 1]}`,
                                         round: r,
                                         isFinal: false,
                                         isChunk: true
@@ -627,19 +623,18 @@
                                 }
                             });
                         }
-                        // Step 2: 最後の1周（全チャンクを1回ずつ）
-                        chunks.forEach((chunk, cIdx) => {
+                        // 最後の1周
+                        chunks.forEach((chunk) => {
                             taskQueue.push({
                                 sub: ex.sub,
                                 name: ex.name,
-                                range: `${chunk[0]}〜${chunk[chunk.length - 1]}`,
+                                range: ex.type === 'list' ? chunk.join(', ') : `${chunk[0]}〜${chunk[chunk.length - 1]}`,
                                 round: R,
                                 isFinal: true,
                                 isChunk: true
                             });
                         });
 
-                        // 日付に割り当て
                         taskQueue.forEach((task, index) => {
                             if (index < availableDates.length) {
                                 const dStr = availableDates[index];
@@ -657,15 +652,26 @@
                         availableDates.forEach((dStr, dIdx) => {
                             const todayTargetCount = Math.floor((dIdx + 1) * pace) - Math.floor(dIdx * pace);
                             if (todayTargetCount > 0) {
-                                const startItem = items[currentIdx % totalItems];
-                                const endItem = items[(currentIdx + todayTargetCount - 1) % totalItems];
+                                let rangeVal;
+                                if (ex.type === 'list') {
+                                    const slice = [];
+                                    for(let k=0; k < todayTargetCount; k++){
+                                        slice.push(items[(currentIdx + k) % totalItems]);
+                                    }
+                                    rangeVal = slice.join(', ');
+                                } else {
+                                    const startItem = items[currentIdx % totalItems];
+                                    const endItem = items[(currentIdx + todayTargetCount - 1) % totalItems];
+                                    rangeVal = `${startItem}〜${endItem}`;
+                                }
+                                
                                 const roundNum = Math.floor(currentIdx / totalItems) + 1;
                                 
                                 if (!plan[dStr]) plan[dStr] = [];
                                 plan[dStr].push({
                                     sub: ex.sub,
                                     name: ex.name,
-                                    range: `${startItem}〜${endItem}`,
+                                    range: rangeVal,
                                     round: roundNum,
                                     isFinal: roundNum === ex.rounds,
                                     isChunk: false
@@ -703,7 +709,9 @@
         function getAvailableDates(start, end, studyDays) {
             const dates = [];
             let curr = new Date(start);
-            while (curr <= end) {
+            const endDate = new Date(end); 
+            // 変更点1：試験日当日を含めない (curr < endDate)
+            while (curr < endDate) {
                 if (studyDays.includes(curr.getDay())) {
                     dates.push(toYMD(curr));
                 }
@@ -733,13 +741,11 @@
         }
 
         function render() {
-            // Stats
             const today = toYMD(new Date());
             const daysLeft = state.exams.length > 0 ? 
                 Math.ceil((new Date(Math.min(...state.exams.map(e => new Date(e.date)))) - new Date()) / 86400000) : '--';
             document.getElementById('stat-days').innerText = daysLeft > 0 ? daysLeft + 'd' : (daysLeft === 0 ? 'DAY' : '--');
 
-            // Today Task
             const todayList = document.getElementById('today-list');
             todayList.innerHTML = '';
             if (state.plan[today]) {
@@ -759,7 +765,6 @@
                 todayList.innerHTML = '<p style="opacity:0.5; font-size:0.8rem;">本日のタスクはありません。計画を生成してください。</p>';
             }
 
-            // Registered List
             const regList = document.getElementById('registered-list');
             regList.innerHTML = '';
             state.exams.forEach(ex => {
@@ -775,7 +780,6 @@
                 regList.appendChild(div);
             });
 
-            // Full Plan
             const planArea = document.getElementById('full-plan-area');
             planArea.innerHTML = '';
             const dates = Object.keys(state.plan).sort();
@@ -793,9 +797,9 @@
                             </div>`;
                     } else {
                         html += `
-                            <div style="font-size:0.85rem; margin-bottom:4px; display:flex; justify-content:space-between;">
-                                <span><span class="status-tag ${t.isFinal?'final':(t.isChunk?'chunk':'')}" style="font-size:0.6rem;">${t.round}周</span> ${t.sub}</span>
-                                <span style="opacity:0.8;">${t.range}</span>
+                            <div style="font-size:0.85rem; margin-bottom:4px; display:flex; justify-content:space-between; align-items: flex-start; gap: 10px;">
+                                <span style="flex-shrink: 0;"><span class="status-tag ${t.isFinal?'final':(t.isChunk?'chunk':'')}" style="font-size:0.6rem;">${t.round}周</span> ${t.sub}</span>
+                                <span style="opacity:0.8; text-align: right; word-break: break-all;">${t.range}</span>
                             </div>`;
                     }
                 });
@@ -804,7 +808,6 @@
             });
         }
 
-        // Init
         load();
         render();
     </script>
