@@ -6,6 +6,7 @@
     <title>ReplanToWin</title>
     <link rel="icon" href="854.png" type="image/png">
     <link rel="apple-touch-icon" href="854.png">
+    
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -15,95 +16,78 @@
             --accent-glow: rgba(0, 242, 255, 0.3);
             --text: #e2e8f0;
             --danger: #ff4757;
-            --chunk: #f0b400;
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        * { box-sizing: border-box; }
         body {
             background-color: var(--bg);
             background-image: radial-gradient(circle at 50% 50%, #0f172a 0%, #020617 100%);
-            color: var(--text);
-            font-family: 'Noto Sans JP', sans-serif;
-            min-height: 100vh;
+            color: var(--text); font-family: 'Noto Sans JP', sans-serif; margin: 0; min-height: 100vh;
         }
+
         nav {
-            display: flex; justify-content: space-around; background: rgba(0,0,0,0.9);
+            display: flex; justify-content: space-around; background: rgba(0, 0, 0, 0.9);
             border-bottom: 2px solid var(--accent-glow); padding: 12px;
             position: sticky; top: 0; z-index: 1000;
         }
-        nav div {
-            cursor: pointer; font-size: 0.7rem; color: #64748b;
-            font-family: 'Orbitron'; font-weight: bold; letter-spacing: 1px;
-        }
+        nav div { cursor: pointer; font-size: 0.7rem; color: #64748b; font-family: 'Orbitron'; font-weight: bold; letter-spacing: 1px; }
         nav div.active { color: var(--accent); text-shadow: 0 0 10px var(--accent); }
+
         .view { max-width: 800px; margin: 20px auto; padding: 0 20px; display: none; }
         .view.active { display: block; animation: fadeIn 0.3s ease; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
         .glass-card {
-            background: var(--panel); border: 1px solid rgba(255,255,255,0.1);
+            background: var(--panel); border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 12px; padding: 20px; margin-bottom: 15px;
         }
-        h3 {
-            font-size: 1rem; color: var(--accent); margin-top: 0;
-            border-left: 3px solid var(--accent); padding-left: 10px; margin-bottom: 12px;
-        }
+
+        h3 { font-size: 1rem; color: var(--accent); margin-top: 0; border-left: 3px solid var(--accent); padding-left: 10px; }
+
         button {
             background: linear-gradient(135deg, var(--accent), #0099ff); color: #000;
-            border: none; padding: 14px; border-radius: 8px; font-weight: bold;
-            cursor: pointer; width: 100%; font-size: 1rem; margin-bottom: 10px;
+            border: none; padding: 16px; border-radius: 8px; font-weight: bold; cursor: pointer; 
+            width: 100%; font-size: 1rem; margin-bottom: 10px;
         }
         button:active { transform: scale(0.98); }
         button.secondary { background: transparent; border: 1px solid var(--accent); color: var(--accent); }
-        button.danger {
-            background: rgba(255,71,87,0.1); border: 1px solid var(--danger);
-            color: var(--danger); padding: 8px 12px; width: auto; font-size: 0.8rem;
-        }
-        button.chunk-btn {
-            background: rgba(240,180,0,0.15); border: 1px solid var(--chunk);
-            color: var(--chunk); padding: 4px 10px; width: auto; font-size: 0.7rem;
-            margin: 2px; border-radius: 20px;
-        }
-        button.chunk-btn.done { background: var(--chunk); color: #000; font-weight: bold; }
+        button.danger { background: rgba(255, 71, 87, 0.1); border: 1px solid var(--danger); color: var(--danger); padding: 8px 12px; width: auto; font-size: 0.8rem; }
+
         input, select, textarea {
-            background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.2);
-            color: #fff; padding: 12px; border-radius: 8px; width: 100%;
-            margin-bottom: 12px; font-size: 1rem;
+            background: rgba(0, 0, 0, 0.6); border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff; padding: 12px; border-radius: 8px; width: 100%; margin-bottom: 12px; font-size: 1rem;
         }
+
+        /* 編集用入力欄のスタイル */
         .plan-edit-input {
-            background: rgba(255,255,255,0.1); border: 1px solid var(--accent);
-            color: #fff; padding: 4px 8px; border-radius: 4px;
-            width: 100%; font-size: 0.9rem; margin: 4px 0;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--accent);
+            color: #fff;
+            padding: 4px 8px;
+            border-radius: 4px;
+            width: 100%;
+            font-size: 0.9rem;
+            margin: 4px 0;
         }
-        .item-row {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05);
-        }
-        .status-tag {
-            font-size: 0.65rem; background: var(--accent); color: #000;
-            padding: 2px 6px; border-radius: 4px; font-weight: bold;
-        }
+
+        .item-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .status-tag { font-size: 0.65rem; background: var(--accent); color: #000; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
+
         .checkbox-group { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 8px; }
         .checkbox-group label { display: flex; align-items: center; gap: 5px; font-size: 0.9rem; cursor: pointer; color: #a0aec0; }
         .checkbox-group input[type="checkbox"] { width: 18px; height: 18px; margin: 0; accent-color: var(--accent); }
+
         #loading {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(2,6,23,0.95); z-index: 2000; display: none;
+            background: rgba(2, 6, 23, 0.95); z-index: 2000; display: none;
             flex-direction: column; align-items: center; justify-content: center;
         }
+
         @keyframes pulse {
             0% { transform: scale(1); opacity: 1; }
             50% { transform: scale(1.1); opacity: 0.7; }
             100% { transform: scale(1); opacity: 1; }
         }
-        .badge {
-            display: inline-block; background: var(--chunk); color: #000;
-            font-weight: bold; padding: 2px 8px; border-radius: 12px;
-            font-size: 0.7rem; margin-left: 6px; animation: pulse 2s infinite;
-        }
-        .chunk-row {
-            display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
-            padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05);
-        }
-        .chunk-label { min-width: 85px; font-size: 0.85rem; }
     </style>
 </head>
 <body>
@@ -152,7 +136,7 @@
     <div class="glass-card">
         <h3>新しい教材を追加する</h3>
         <input id="in-sub" placeholder="科目 (例: 数学、英語)">
-
+        
         <div style="margin-bottom: 12px;">
             <label style="font-size: 0.8rem; color: var(--accent); display: block; margin-bottom: 4px;">試験日（または完了目標日）：</label>
             <input id="in-date" type="date" style="margin-bottom: 0;">
@@ -175,14 +159,7 @@
             <option value="range">ページ範囲 (1-200 など)</option>
             <option value="vol">合計件数 (1500語 など)</option>
             <option value="list">項目リスト (プリントAなど)</option>
-            <option value="chunk_range">🧠 小刻みに復習（ページ範囲） ★学習効果が高い</option>
-            <option value="chunk_vol">🧠 小刻みに復習（合計件数） ★学習効果が高い</option>
         </select>
-
-        <div id="chunk-info" style="display:none; background: rgba(240,180,0,0.1); border: 1px solid var(--chunk); border-radius: 8px; padding: 8px 12px; margin-bottom: 12px; font-size: 0.8rem; color: var(--chunk);">
-            <span class="badge">🧠 小刻み復習</span> チャンクに区切って連続復習。同日に同じ範囲の異なる周回が重ならないよう自動調整されます。
-        </div>
-
         <div id="ui-range">
             <input id="in-name-range" placeholder="教材名">
             <input id="in-val-range" placeholder="範囲 (例: 1-150)">
@@ -197,11 +174,16 @@
             <input id="in-name-list" placeholder="教材名">
             <textarea id="in-val-list" placeholder="項目をカンマ(,)で区切って入力" rows="3"></textarea>
         </div>
-
         <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
             <span>目標周回数:</span>
             <input id="in-rounds" type="number" value="3" style="width: 80px; margin: 0;">
         </div>
+
+        <!-- 小刻み復習チェックボックス -->
+        <label id="spaced-label" style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px; font-size: 0.9rem; color: var(--accent);">
+            <input type="checkbox" id="in-spaced" style="width: 20px; height: 20px; margin: 0; accent-color: var(--accent);"> 🔥 小刻みに復習 (学習効果が高い)
+            <span id="spaced-note" style="display: none; color: var(--danger); font-size: 0.7rem;">※リスト教材では非対応</span>
+        </label>
 
         <button onclick="addMaterial()">この教材をリストに登録する</button>
     </div>
@@ -225,309 +207,440 @@
 </div>
 
 <script>
-    // --- AUDIO ---
-    let audioCtx;
-    function playSound(f,d){ try {
-        if(!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)();
-        const o=audioCtx.createOscillator(),g=audioCtx.createGain();
+// --- AUDIO ENGINE ---
+let audioCtx;
+function playSound(f, d) {
+    try {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const o = audioCtx.createOscillator();
+        const g = audioCtx.createGain();
         o.connect(g); g.connect(audioCtx.destination);
-        o.frequency.setValueAtTime(f,audioCtx.currentTime);
-        g.gain.setValueAtTime(0.05,audioCtx.currentTime);
-        g.gain.exponentialRampToValueAtTime(0.01,audioCtx.currentTime+d);
-        o.start(); o.stop(audioCtx.currentTime+d);
-    } catch(e){} }
+        o.frequency.setValueAtTime(f, audioCtx.currentTime);
+        g.gain.setValueAtTime(0.05, audioCtx.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + d);
+        o.start(); o.stop(audioCtx.currentTime + d);
+    } catch(e) {}
+}
 
-    function toYMD(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+// --- HELPER ---
+function toYMD(d) {
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+}
 
-    const KEY='test_os_v6_1_data';
-    let state={exams:[],plan:{}};
-    let isPlanEditing=false;
+// --- DATA ---
+const KEY = 'test_os_v6_1_data';
+let state = { exams: [], plan: {} };
+let isPlanEditing = false; 
 
-    function load(){ const s=localStorage.getItem(KEY); if(s) state=JSON.parse(s); }
-    function save(){ try{ localStorage.setItem(KEY,JSON.stringify(state)); }catch(e){} render(); }
+function load() {
+    const saved = localStorage.getItem(KEY);
+    if (saved) state = JSON.parse(saved);
+}
 
-    function switchView(id){
-        playSound(600,0.1);
-        document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
-        document.querySelectorAll('nav div').forEach(n=>n.classList.remove('active'));
-        const t=document.getElementById('view-'+id);
-        if(t){ t.classList.add('active'); document.getElementById('nav-'+id).classList.add('active'); }
+function save() {
+    try {
+        localStorage.setItem(KEY, JSON.stringify(state));
+    } catch(e) {
+        console.error('Storage Save Error', e);
     }
+    render();
+}
 
-    function toggleMode(){
-        const m=document.getElementById('in-mode').value;
-        document.getElementById('ui-range').style.display = (m==='range'||m==='chunk_range')?'block':'none';
-        document.getElementById('ui-vol').style.display = (m==='vol'||m==='chunk_vol')?'block':'none';
-        document.getElementById('ui-list').style.display = (m==='list')?'block':'none';
-        document.getElementById('chunk-info').style.display = (m==='chunk_range'||m==='chunk_vol')?'block':'none';
+// --- UI ---
+function switchView(id) {
+    playSound(600, 0.1);
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.querySelectorAll('nav div').forEach(n => n.classList.remove('active'));
+    const target = document.getElementById(`view-${id}`);
+    if (target) {
+        target.classList.add('active');
+        document.getElementById(`nav-${id}`).classList.add('active');
     }
+}
 
-    function togglePlanEdit(){
-        isPlanEditing=!isPlanEditing;
-        document.getElementById('btn-edit-plan').innerText = isPlanEditing?'✔ 完了':'✎ 編集';
-        if(!isPlanEditing) playSound(800,0.1);
-        render();
+function toggleMode() {
+    const m = document.getElementById('in-mode').value;
+    document.getElementById('ui-range').style.display = m === 'range' ? 'block' : 'none';
+    document.getElementById('ui-vol').style.display = m === 'vol' ? 'block' : 'none';
+    document.getElementById('ui-list').style.display = m === 'list' ? 'block' : 'none';
+    updateSpacedUI();
+}
+
+function updateSpacedUI() {
+    const mode = document.getElementById('in-mode').value;
+    const spacedCheck = document.getElementById('in-spaced');
+    const spacedNote = document.getElementById('spaced-note');
+    if (mode === 'list') {
+        spacedCheck.disabled = true;
+        spacedCheck.parentElement.style.opacity = '0.6';
+        if (spacedNote) spacedNote.style.display = 'inline';
+    } else {
+        spacedCheck.disabled = false;
+        spacedCheck.parentElement.style.opacity = '1';
+        if (spacedNote) spacedNote.style.display = 'none';
     }
+}
 
-    function updatePlanManual(date,idx,value){
-        if(state.plan[date]&&state.plan[date][idx]){
-            state.plan[date][idx].desc=value;
-            localStorage.setItem(KEY,JSON.stringify(state));
+function togglePlanEdit() {
+    isPlanEditing = !isPlanEditing;
+    const btn = document.getElementById('btn-edit-plan');
+    btn.innerText = isPlanEditing ? '✔ 完了' : '✎ 編集';
+    if (!isPlanEditing) playSound(800, 0.1);
+    render();
+}
+
+function updatePlanManual(date, idx, value) {
+    if (state.plan[date] && state.plan[date][idx]) {
+        state.plan[date][idx].desc = value;
+        localStorage.setItem(KEY, JSON.stringify(state));
+    }
+}
+
+// --- LOGIC ---
+function addMaterial() {
+    const sub = document.getElementById('in-sub').value.trim();
+    const date = document.getElementById('in-date').value;
+    if (!sub || !date) return alert('科目名と日付を入力してください');
+
+    let selectedDays = Array.from(document.querySelectorAll('#sys-days input[type="checkbox"]:checked')).map(cb => parseInt(cb.value));
+    if (selectedDays.length === 0) {
+        const activeView = document.querySelector('.view.active');
+        if (activeView) {
+            selectedDays = Array.from(activeView.querySelectorAll('input[type="checkbox"]:checked')).map(cb => parseInt(cb.value));
         }
     }
 
-    // --- 追加 ---
-    function addMaterial(){
-        const sub=document.getElementById('in-sub').value.trim();
-        const date=document.getElementById('in-date').value;
-        if(!sub||!date) return alert('科目名と日付を入力してください');
-
-        let days=[...document.querySelectorAll('#in-days input[type="checkbox"]:checked')].map(c=>+c.value);
-        if(days.length===0) return alert('曜日を1つ以上選択してください');
-
-        let exam=state.exams.find(e=>e.subject===sub&&e.date===date);
-        if(!exam){ exam={id:Date.now(),subject:sub,date:date,materials:[]}; state.exams.push(exam); }
-
-        const mode=document.getElementById('in-mode').value;
-        const rounds=parseInt(document.getElementById('in-rounds').value)||1;
-        const mId=Date.now()+Math.floor(Math.random()*10000);
-        let mat;
-        const base={id:mId,rounds,days};
-
-        if(mode==='range'){
-            let v=document.getElementById('in-val-range').value.replace(/[０-９]/g,s=>String.fromCharCode(s.charCodeAt(0)-0xFEE0)).replace(/\s+/g,'');
-            const m=v.match(/^(\d+)[-〜~ー](\d+)$/);
-            if(!m) return alert('範囲は 1-100 の形式で');
-            mat={...base,type:'range',name:document.getElementById('in-name-range').value||'教材',start:+m[1],end:+m[2],doneRounds:Array(rounds).fill(0),unit:document.getElementById('in-unit-range').value};
-        }else if(mode==='vol'){
-            const total=parseInt(document.getElementById('in-val-vol').value.replace(/[０-９]/g,s=>String.fromCharCode(s.charCodeAt(0)-0xFEE0)));
-            if(!total) return alert('合計件数を入力');
-            mat={...base,type:'vol',name:document.getElementById('in-name-vol').value||'教材',total,doneRounds:Array(rounds).fill(0),unit:document.getElementById('in-unit-vol').value};
-        }else if(mode==='list'){
-            const items=document.getElementById('in-val-list').value.split(/[,、\n]/).filter(s=>s.trim());
-            if(!items.length) return alert('項目を入力');
-            mat={...base,type:'list',name:document.getElementById('in-name-list').value||'教材',items:items.map(l=>({l:l.trim(),d:0}))};
-        }else if(mode==='chunk_range'){
-            let v=document.getElementById('in-val-range').value.replace(/[０-９]/g,s=>String.fromCharCode(s.charCodeAt(0)-0xFEE0)).replace(/\s+/g,'');
-            const m=v.match(/^(\d+)[-〜~ー](\d+)$/);
-            if(!m) return alert('範囲は 1-100 の形式で');
-            mat={...base,type:'chunk_range',name:document.getElementById('in-name-range').value||'教材',start:+m[1],end:+m[2],unit:document.getElementById('in-unit-range').value,chunks:[],chunkSize:0};
-        }else if(mode==='chunk_vol'){
-            const total=parseInt(document.getElementById('in-val-vol').value.replace(/[０-９]/g,s=>String.fromCharCode(s.charCodeAt(0)-0xFEE0)));
-            if(!total) return alert('合計件数を入力');
-            mat={...base,type:'chunk_vol',name:document.getElementById('in-name-vol').value||'教材',total,unit:document.getElementById('in-unit-vol').value,chunks:[],chunkSize:0};
-        }
-
-        exam.materials.push(mat);
-        playSound(800,0.2);
-        save(); alert('教材を登録しました');
+    if (selectedDays.length === 0) {
+        return alert('教材を学習する曜日を1つ以上選択してください');
     }
 
-    // --- 計画生成（小刻み復習アルゴリズム含む） ---
-    function generatePlan(){
-        if(!state.exams.length) return alert('先に教材を登録してください');
-        playSound(400,0.5);
-        document.getElementById('loading').style.display='flex';
+    let exam = state.exams.find(e => e.subject === sub && e.date === date);
+    if (!exam) {
+        exam = { id: Date.now(), subject: sub, date: date, materials: [] };
+        state.exams.push(exam);
+    }
 
-        setTimeout(()=>{
-            try{
-                state.plan={};
-                const startInput=document.getElementById('sys-start-date').value;
-                let globalStart=startInput?new Date(startInput):new Date();
-                globalStart.setHours(0,0,0,0);
+    const mode = document.getElementById('in-mode').value;
+    const rounds = parseInt(document.getElementById('in-rounds').value) || 1;
+    const mId = Date.now() + Math.floor(Math.random() * 10000);
 
-                state.exams.forEach(exam=>{
-                    const [ey,em,ed]=exam.date.split('-').map(Number);
-                    const endDate=new Date(ey,em-1,ed); endDate.setHours(0,0,0,0);
+    let newMat;
+    const common = { id: mId, rounds, days: selectedDays };
+    const spaced = document.getElementById('in-spaced').checked && mode !== 'list'; // リストでは無効
 
-                    exam.materials.forEach(mat=>{
-                        const matDays=mat.days?.length?mat.days:[0,1,2,3,4,5,6];
-                        let dates=[], cur=new Date(globalStart);
-                        while(cur<=endDate){
-                            if(matDays.includes(cur.getDay())) dates.push(new Date(cur));
-                            cur.setDate(cur.getDate()+1);
+    if (mode === 'range') {
+        let val = document.getElementById('in-val-range').value;
+        val = val.replace(/[０-９]/g, s => String.fromCharCode(s.charCodeAt(0) - 0xFEE0)).replace(/\s+/g, '');
+        const m = val.match(/^(\d+)[-〜~ー](\d+)$/);
+        if (!m) return alert('範囲は 1-100 の形式で入力してください');
+        newMat = { ...common, type: 'range', name: document.getElementById('in-name-range').value || '教材', start: parseInt(m[1]), end: parseInt(m[2]), doneRounds: new Array(rounds).fill(0), unit: document.getElementById('in-unit-range').value, spaced };
+    } else if (mode === 'vol') {
+        let val = document.getElementById('in-val-vol').value.replace(/[０-９]/g, s => String.fromCharCode(s.charCodeAt(0) - 0xFEE0));
+        const total = parseInt(val);
+        if (!total) return alert('合計件数を入力してください');
+        newMat = { ...common, type: 'vol', name: document.getElementById('in-name-vol').value || '教材', total, doneRounds: new Array(rounds).fill(0), unit: document.getElementById('in-unit-vol').value, spaced };
+    } else {
+        const items = document.getElementById('in-val-list').value.split(/[,、\n]/).filter(s => s.trim());
+        if (items.length === 0) return alert('項目を入力してください');
+        newMat = { ...common, type: 'list', name: document.getElementById('in-name-list').value || '教材', items: items.map(l => ({ l: l.trim(), d: 0 })), spaced: false };
+    }
+
+    exam.materials.push(newMat);
+    playSound(800, 0.2);
+    save(); 
+    alert('教材を登録しました');
+}
+
+function generatePlan() {
+    if (state.exams.length === 0) return alert('先に教材を登録してください');
+    
+    playSound(400, 0.5);
+    document.getElementById('loading').style.display = 'flex';
+
+    setTimeout(() => {
+        try {
+            state.plan = {};
+            const startDateInput = document.getElementById('sys-start-date').value;
+            let globalStart = startDateInput ? new Date(startDateInput) : new Date();
+            globalStart.setHours(0,0,0,0);
+
+            state.exams.forEach(exam => {
+                const [ey, em, ed] = exam.date.split('-').map(Number);
+                const endDate = new Date(ey, em - 1, ed);
+                endDate.setHours(0,0,0,0);
+                
+                exam.materials.forEach(mat => {
+                    const matDays = (mat.days && mat.days.length > 0) ? mat.days : [0,1,2,3,4,5,6];
+                    let availableDates = [];
+                    let curDate = new Date(globalStart);
+                    while (curDate <= endDate) {
+                        if (matDays.includes(curDate.getDay())) {
+                            availableDates.push(new Date(curDate));
                         }
-                        if(!dates.length) dates.push(new Date(globalStart));
-                        const D=dates.length;
-                        const R=mat.rounds;
+                        curDate.setDate(curDate.getDate() + 1);
+                    }
+                    if (availableDates.length === 0) availableDates.push(new Date(globalStart));
+                    const daysCount = availableDates.length;
 
-                        if(mat.type==='list'){
-                            let q=[]; for(let r=1;r<=R;r++) mat.items.forEach(it=>{if(it.d<r) q.push({l:it.l,r});});
-                            const per=Math.ceil(q.length/D); let qi=0;
-                            for(let i=0;i<D&&qi<q.length;i++){
-                                const k=toYMD(dates[i]); if(!state.plan[k]) state.plan[k]=[];
-                                for(let j=0;j<per&&qi<q.length;j++){ const t=q[qi++]; state.plan[k].push({sub:exam.subject,mat:mat.name,desc:t.l,info:`${t.r}周目`,id:mat.id}); }
+                    // 小刻み復習アルゴリズム（範囲・合計件数タイプのみ）
+                    if (mat.spaced && mat.type !== 'list') {
+                        const totalUnits = mat.type === 'range' ? (mat.end - mat.start + 1) : mat.total;
+                        const totalAmount = totalUnits * mat.rounds;
+                        const avgDaily = totalAmount / daysCount;
+                        let chunkSize = Math.ceil(avgDaily);
+                        if (chunkSize < 1) chunkSize = 1;
+                        const numChunks = Math.ceil(totalUnits / chunkSize);
+
+                        // 最低限必要な日数: 各チャンクの (R-1) 日 + 最終周に最低1日
+                        if (daysCount >= numChunks * (mat.rounds - 1) + 1) {
+                            // チャンクを構築
+                            let chunks = [];
+                            let unit = mat.unit || '';
+                            for (let i = 0; i < numChunks; i++) {
+                                let start, end;
+                                if (mat.type === 'range') {
+                                    start = mat.start + i * chunkSize;
+                                    end = Math.min(mat.start + (i + 1) * chunkSize - 1, mat.end);
+                                } else {
+                                    start = i * chunkSize + 1;
+                                    end = Math.min((i + 1) * chunkSize, mat.total);
+                                }
+                                chunks.push({ start, end });
                             }
-                        }else if(mat.type==='range'||mat.type==='vol'){
-                            const total=mat.type==='range'?(mat.end-mat.start+1):mat.total;
-                            if(!mat.doneRounds) mat.doneRounds=Array(R).fill(0);
-                            let q=[]; for(let r=0;r<R;r++){ let rem=total-(mat.doneRounds[r]||0); if(rem>0) q.push({r:r+1,start:mat.type==='range'?mat.start+(mat.doneRounds[r]||0):null,rem}); }
-                            const totalRem=q.reduce((s,x)=>s+x.rem,0);
-                            if(totalRem>0){
-                                const per=Math.ceil(totalRem/D); let qi=0;
-                                for(let i=0;i<D&&qi<q.length;i++){
-                                    const k=toYMD(dates[i]); if(!state.plan[k]) state.plan[k]=[];
-                                    let day=per;
-                                    while(day>0&&qi<q.length){
-                                        let x=q[qi]; let amt=Math.min(day,x.rem);
-                                        let desc=mat.type==='range'?`${x.start}〜${x.start+amt-1}${mat.unit||''}`:`${amt}${mat.unit||''}`;
-                                        if(mat.type==='range') x.start+=amt;
-                                        state.plan[k].push({sub:exam.subject,mat:mat.name,desc,info:`${x.r}周目`,id:mat.id});
-                                        x.rem-=amt; day-=amt; if(x.rem<=0) qi++;
-                                    }
+
+                            let dayIdx = 0;
+
+                            // ステップ2: 各チャンクを (R-1) 回連続で学習
+                            for (let i = 0; i < numChunks; i++) {
+                                for (let r = 1; r < mat.rounds; r++) {
+                                    if (dayIdx >= daysCount) break;
+                                    const k = toYMD(availableDates[dayIdx]);
+                                    if (!state.plan[k]) state.plan[k] = [];
+                                    const desc = mat.type === 'range' || mat.type === 'vol' ? `${chunks[i].start}〜${chunks[i].end}${unit}` : `C${i+1}`;
+                                    state.plan[k].push({
+                                        sub: exam.subject,
+                                        mat: mat.name,
+                                        desc: desc,
+                                        info: `${r}周目`,
+                                        id: mat.id
+                                    });
+                                    dayIdx++;
                                 }
                             }
-                        }else if(mat.type==='chunk_range'||mat.type==='chunk_vol'){
-                            const total=mat.type==='chunk_range'?(mat.end-mat.start+1):mat.total;
-                            let N=Math.max(1,Math.floor(D/R));
-                            let S=Math.ceil(total/N);
-                            let chunks=[], start=mat.type==='chunk_range'?mat.start:1, rem=total, idx=0;
-                            while(rem>0){
-                                let sz=Math.min(S,rem);
-                                let end=mat.type==='chunk_range'?start+sz-1:sz;
-                                let desc=mat.type==='chunk_range'?`${start}〜${end}${mat.unit||''}`:`${sz}${mat.unit||''}`;
-                                chunks.push({id:mat.id+'_chunk_'+idx, start, end, size:sz, desc, progress:Array(R).fill(0)});
-                                start+=sz; rem-=sz; idx++;
-                            }
-                            mat.chunks=chunks; mat.chunkSize=S;
-                            let d=0;
-                            for(let c=0;c<chunks.length;c++){
-                                for(let r=0;r<R-1;r++){
-                                    if(d<D){
-                                        const k=toYMD(dates[d]); if(!state.plan[k]) state.plan[k]=[];
-                                        state.plan[k].push({sub:exam.subject,mat:mat.name,desc:chunks[c].desc,info:`C${c+1} ${r+1}周目`,id:mat.id,chunkId:chunks[c].id,round:r+1});
-                                        d++;
+
+                            // ステップ3: 最終周（全チャンクを1回ずつ）
+                            let remainingDays = daysCount - dayIdx;
+                            if (remainingDays > 0) {
+                                for (let i = 0; i < numChunks; i++) {
+                                    let targetIdx;
+                                    if (remainingDays >= numChunks) {
+                                        targetIdx = dayIdx + i;
+                                    } else {
+                                        targetIdx = dayIdx + Math.floor(i * remainingDays / numChunks);
                                     }
+                                    if (targetIdx >= daysCount) targetIdx = daysCount - 1;
+                                    const k = toYMD(availableDates[targetIdx]);
+                                    if (!state.plan[k]) state.plan[k] = [];
+                                    const desc = mat.type === 'range' || mat.type === 'vol' ? `${chunks[i].start}〜${chunks[i].end}${unit}` : `C${i+1}`;
+                                    state.plan[k].push({
+                                        sub: exam.subject,
+                                        mat: mat.name,
+                                        desc: desc,
+                                        info: `${mat.rounds}周目`,
+                                        id: mat.id
+                                    });
+                                }
+                            } else {
+                                // 最終日が残っていなければ最終日にまとめる
+                                let lastIdx = daysCount - 1;
+                                const k = toYMD(availableDates[lastIdx]);
+                                for (let i = 0; i < numChunks; i++) {
+                                    const desc = mat.type === 'range' || mat.type === 'vol' ? `${chunks[i].start}〜${chunks[i].end}${unit}` : `C${i+1}`;
+                                    state.plan[k].push({
+                                        sub: exam.subject,
+                                        mat: mat.name,
+                                        desc: desc,
+                                        info: `${mat.rounds}周目`,
+                                        id: mat.id
+                                    });
                                 }
                             }
-                            for(let c=0;c<chunks.length;c++){
-                                if(d<D){
-                                    const k=toYMD(dates[d]); if(!state.plan[k]) state.plan[k]=[];
-                                    state.plan[k].push({sub:exam.subject,mat:mat.name,desc:chunks[c].desc,info:`C${c+1} ${R}周目(最終)`,id:mat.id,chunkId:chunks[c].id,round:R});
-                                    d++;
+                            return; // 通常の処理をスキップ
+                        }
+                        // 日数不足の場合は通常処理にフォールバック
+                    }
+
+                    // 通常のアルゴリズム
+                    if (mat.type === 'list') {
+                        let queue = [];
+                        for (let r = 1; r <= mat.rounds; r++) {
+                            mat.items.forEach(it => { if (it.d < r) queue.push({ l: it.l, r: r }); });
+                        }
+                        const perDay = Math.ceil(queue.length / daysCount);
+                        let cur = 0;
+                        for (let i=0; i<daysCount && cur<queue.length; i++) {
+                            const k = toYMD(availableDates[i]);
+                            if (!state.plan[k]) state.plan[k] = [];
+                            for (let j=0; j<perDay && cur<queue.length; j++) {
+                                if (queue[cur]) {
+                                    const t = queue[cur++];
+                                    state.plan[k].push({ sub: exam.subject, mat: mat.name, desc: t.l, info: `${t.r}周目`, id: mat.id });
                                 }
                             }
                         }
-                    });
+                    } else {
+                        let unitsPerRound = (mat.type === 'range' ? (mat.end - mat.start + 1) : mat.total);
+                        if (!mat.doneRounds) mat.doneRounds = new Array(mat.rounds).fill(0);
+
+                        let queue = [];
+                        for (let r=0; r<mat.rounds; r++) {
+                            let rem = unitsPerRound - (mat.doneRounds[r] || 0);
+                            if (rem > 0) {
+                                queue.push({ r: r+1, start: mat.type === 'range' ? (mat.start + (mat.doneRounds[r]||0)) : null, rem });
+                            }
+                        }
+
+                        let totalRem = queue.reduce((sum, q) => sum + q.rem, 0);
+                        if (totalRem > 0) {
+                            const perDay = Math.ceil(totalRem / daysCount);
+                            let qIdx = 0;
+                            for (let i=0; i<daysCount && qIdx < queue.length; i++) {
+                                const k = toYMD(availableDates[i]);
+                                if (!state.plan[k]) state.plan[k] = [];
+                                let dayRem = perDay;
+                                while (dayRem > 0 && qIdx < queue.length) {
+                                    let q = queue[qIdx];
+                                    let amt = Math.min(dayRem, q.rem);
+                                    let descText = mat.type === 'range' ? `${q.start}〜${q.start + amt - 1}${mat.unit||''}` : `${amt}${mat.unit||''}`;
+                                    if (mat.type === 'range') q.start += amt;
+                                    state.plan[k].push({ sub: exam.subject, mat: mat.name, desc: descText, info: `${q.r}周目`, id: mat.id });
+                                    q.rem -= amt; dayRem -= amt;
+                                    if (q.rem <= 0) qIdx++;
+                                }
+                            }
+                        }
+                    }
                 });
-                save();
-                document.getElementById('loading').style.display='none';
-                playSound(1000,0.3);
-                switchView('home');
-            }catch(e){ document.getElementById('loading').style.display='none'; console.error(e); alert('エラーが発生しました'); }
-        },500);
-    }
-
-    function updateProg(matId,itIdx,val){
-        const m=findMat(matId); if(!m) return;
-        if(m.type==='list'){
-            const r=parseInt(val)||0;
-            if(itIdx===-1) m.items.forEach(it=>it.d=r); else m.items[itIdx].d=r;
-        }else if(m.type==='range'||m.type==='vol'){
-            let parsed=0;
-            if(m.type==='range'&&typeof val==='string'&&val.match(/\d+[-〜~ー]\d+/)){
-                let parts=val.replace(/[０-９]/g,s=>String.fromCharCode(s.charCodeAt(0)-0xFEE0)).split(/[-〜~ー]/);
-                parsed=(parseInt(parts[1])-m.start+1)||0;
-            }else parsed=parseInt(val)||0;
-            if(itIdx>0){
-                if(!m.doneRounds) m.doneRounds=Array(m.rounds).fill(0);
-                while(m.doneRounds.length<m.rounds) m.doneRounds.push(0);
-                m.doneRounds[itIdx-1]=Math.max(0,parsed);
-            }
-        }
-        save();
-    }
-
-    function updateChunkProg(matId,chunkId,round){
-        const m=findMat(matId); if(!m||!m.chunks) return;
-        const c=m.chunks.find(c=>c.id===chunkId); if(!c) return;
-        c.progress[round-1]=c.progress[round-1]===1?0:1;
-        playSound(600,0.1); save();
-    }
-
-    function deleteMat(eId,mId){
-        if(!confirm('削除しますか？')) return;
-        const e=state.exams.find(ex=>ex.id===eId);
-        if(e) e.materials=e.materials.filter(m=>m.id!==mId);
-        Object.keys(state.plan).forEach(k=>state.plan[k]=state.plan[k].filter(t=>t.id!==mId));
-        save();
-    }
-
-    function findMat(id){ for(let e of state.exams) for(let m of e.materials) if(m.id==id) return m; return null; }
-
-    function render(){
-        const today=toYMD(new Date());
-        const hasPlan=Object.keys(state.plan).length>0;
-        document.getElementById('main-plan-btn').innerText=hasPlan?'⚡ 進捗状況を解析し、AIが計画を再構築':'✨ AI学習計画を新規生成する';
-
-        let tAll=0,tDone=0;
-        state.exams.forEach(e=>e.materials.forEach(m=>{
-            if(m.type==='list'){ tAll+=m.items.length*m.rounds; tDone+=m.items.reduce((s,i)=>s+i.d,0); }
-            else if(m.type==='chunk_range'||m.type==='chunk_vol'){
-                let units=m.type==='chunk_range'?(m.end-m.start+1):m.total;
-                tAll+=units*m.rounds;
-                if(m.chunks) m.chunks.forEach(c=>c.progress.forEach(p=>tDone+=p*c.size));
-            }else{
-                let units=(m.type==='range'?(m.end-m.start+1):m.total);
-                tAll+=units*m.rounds;
-                tDone+=(m.doneRounds||[]).reduce((a,b)=>a+b,0);
-            }
-        }));
-        document.getElementById('stat-progress').innerText=Math.floor((tDone/(tAll||1))*100)+'%';
-
-        if(state.exams.length){
-            const dates=state.exams.map(e=>new Date(e.date));
-            const diff=Math.ceil((Math.min(...dates)-new Date().setHours(0,0,0,0))/86400000);
-            document.getElementById('stat-days').innerText=Math.max(0,diff)+'日';
-        }
-
-        const tasks=state.plan[today]||[];
-        document.getElementById('today-list').innerHTML=tasks.length?tasks.map(t=>`<div class="item-row"><div><small>${t.sub}</small><br><b>${t.mat}: ${t.desc}</b></div><span class="status-tag">${t.info}</span></div>`).join(''):'<p style="text-align:center;opacity:0.5;">予定なし</p>';
-
-        document.getElementById('registered-list').innerHTML=state.exams.map(e=>e.materials.map(m=>{
-            let badge='';
-            if(m.type==='chunk_range') badge=' <span class="badge">🧠小刻み</span>';
-            if(m.type==='chunk_vol') badge=' <span class="badge">🧠小刻み</span>';
-            return `<div class="item-row"><div><small>${e.subject}</small><br><b>${m.name}</b>${badge}</div><button class="danger" onclick="deleteMat(${e.id},${m.id})">削除</button></div>`;
-        }).join('')).join('')||'<p style="opacity:0.5;">登録なし</p>';
-
-        // 進捗入力エリア
-        document.getElementById('progress-input-area').innerHTML=state.exams.map(e=>e.materials.map(m=>{
-            if(m.type==='list'){
-                return `<div class="glass-card"><h3>${m.name}</h3><div class="item-row"><span>一括</span><input type="number" onchange="updateProg(${m.id},-1,this.value)" style="width:80px;"><span>周</span></div>${m.items.map((it,idx)=>`<div class="item-row"><span>${it.l}</span><input type="number" value="${it.d}" onchange="updateProg(${m.id},${idx},this.value)" style="width:60px;"></div>`).join('')}</div>`;
-            }else if(m.type==='chunk_range'||m.type==='chunk_vol'){
-                const chunks=m.chunks||[];
-                if(!chunks.length) return `<div class="glass-card"><h3>${m.name} <span class="badge">🧠小刻み</span></h3><p style="opacity:0.5;">計画が未生成です。「AI学習計画を生成」を実行してください。</p></div>`;
-                return `<div class="glass-card"><h3>${m.name} <span class="badge">🧠小刻み復習</span></h3><div style="font-size:0.8rem;margin-bottom:8px;">総量: ${m.type==='chunk_range'?(m.end-m.start+1)+m.unit:m.total+m.unit} / ${m.rounds}周 / チャンク数 ${chunks.length}</div>${chunks.map((c,ci)=>`<div class="chunk-row"><span class="chunk-label"><b>C${ci+1}:</b> ${c.desc}</span>${Array.from({length:m.rounds},(_,r)=>`<button class="chunk-btn${c.progress[r]?' done':''}" onclick="updateChunkProg(${m.id},'${c.id}',${r+1})">${r+1}周目${c.progress[r]?' ✓':''}</button>`).join('')}</div>`).join('')}</div>`;
-            }else{
-                let drs=m.doneRounds||Array(m.rounds).fill(0);
-                let info=m.type==='range'?`全体範囲: ${m.start}〜${m.end}`:`全体量: ${m.total}`;
-                return `<div class="glass-card"><h3>${m.name}</h3><div style="font-size:0.8rem;color:#a0aec0;margin-bottom:8px;">${info} ${m.unit||''}</div>${drs.map((dr,idx)=>{ let val=dr; if(m.type==='range'&&dr>0) val=`${m.start}-${m.start+dr-1}`; return `<div class="item-row"><span>${idx+1}周目</span><input type="${m.type==='range'?'text':'number'}" value="${val}" onchange="updateProg(${m.id},${idx+1},this.value)" style="width:100px;"><span>${m.type==='range'?'':(m.unit||'')}</span></div>`; }).join('')}</div>`;
-            }
-        }).join('')).join('')||'<p style="opacity:0.5;">登録なし</p>';
-
-        let planHtml='';
-        Object.keys(state.plan).sort().forEach(d=>{
-            planHtml+=`<h4 style="color:var(--accent);border-bottom:1px solid #333;margin-bottom:10px;margin-top:20px;">${d}</h4>`;
-            state.plan[d].forEach((t,idx)=>{
-                const content=isPlanEditing?`<input type="text" class="plan-edit-input" value="${t.desc}" oninput="updatePlanManual('${d}',${idx},this.value)">`:`<b>${t.mat}: ${t.desc}</b>`;
-                planHtml+=`<div class="item-row"><div style="flex:1;"><small>${t.sub}</small><br>${content}</div><span class="status-tag">${t.info}</span></div>`;
             });
-        });
-        document.getElementById('full-plan-area').innerHTML=planHtml||'<p style="opacity:0.5;">計画がありません</p>';
+            save();
+            document.getElementById('loading').style.display = 'none';
+            playSound(1000, 0.3);
+            switchView('home');
+        } catch (e) {
+            document.getElementById('loading').style.display = 'none';
+            console.error(e);
+            alert('エラーが発生しました');
+        }
+    }, 500);
+}
+
+function updateProg(matId, itIdx, val) {
+    const m = findMat(matId);
+    if (!m) return;
+    if (m.type === 'list') {
+        const r = parseInt(val) || 0;
+        if (itIdx === -1) m.items.forEach(it => it.d = r);
+        else m.items[itIdx].d = r;
+    } else {
+        let parsed = 0;
+        if (m.type === 'range' && typeof val === 'string' && val.match(/\d+[-〜~ー]\d+/)) {
+            let parts = val.replace(/[０-９]/g, s => String.fromCharCode(s.charCodeAt(0) - 0xFEE0)).split(/[-〜~ー]/);
+            parsed = (parseInt(parts[1]) - m.start + 1) || 0;
+        } else {
+            parsed = parseInt(val) || 0;
+        }
+        if (itIdx > 0) {
+            if (!m.doneRounds) m.doneRounds = new Array(m.rounds).fill(0);
+            while(m.doneRounds.length < m.rounds) m.doneRounds.push(0);
+            m.doneRounds[itIdx-1] = Math.max(0, parsed);
+        }
+    }
+    save();
+}
+
+function deleteMat(eId, mId) {
+    if(!confirm('削除しますか？')) return;
+    const e = state.exams.find(ex => ex.id === eId);
+    if (e) e.materials = e.materials.filter(m => m.id !== mId);
+    Object.keys(state.plan).forEach(k => state.plan[k] = state.plan[k].filter(t => t.id !== mId));
+    save();
+}
+
+function findMat(id) {
+    for (let e of state.exams) for (let m of e.materials) if (m.id == id) return m;
+    return null;
+}
+
+function render() {
+    const today = toYMD(new Date()); 
+    const hasPlan = Object.keys(state.plan).length > 0;
+    document.getElementById('main-plan-btn').innerText = hasPlan ? '⚡ 進捗状況を解析し、AIが計画を再構築' : '✨ AI学習計画を新規生成する';
+
+    let tAll = 0, tDone = 0;
+    state.exams.forEach(e => e.materials.forEach(m => {
+        if (m.type === 'list') { 
+            tAll += m.items.length * m.rounds; 
+            tDone += m.items.reduce((s,i)=>s+i.d, 0); 
+        } else { 
+            let units = (m.type==='range'?(m.end-m.start+1):m.total);
+            tAll += units * m.rounds; 
+            tDone += (m.doneRounds || []).reduce((a,b)=>a+b, 0);
+        }
+    }));
+    document.getElementById('stat-progress').innerText = Math.floor((tDone/(tAll||1))*100) + '%';
+    
+    if (state.exams.length) {
+        const dates = state.exams.map(e => new Date(e.date));
+        const diff = Math.ceil((Math.min(...dates) - new Date().setHours(0,0,0,0)) / 86400000);
+        document.getElementById('stat-days').innerText = Math.max(0, diff) + '日';
     }
 
-    window.onload=()=>{
-        load();
-        document.getElementById('sys-start-date').value=toYMD(new Date());
-        render();
-        if('serviceWorker' in navigator){
-            const sw="self.addEventListener('install',e=>e.waitUntil(self.skipWaiting()));self.addEventListener('activate',e=>e.waitUntil(self.clients.claim()));self.addEventListener('fetch',e=>{});";
-            navigator.serviceWorker.register(URL.createObjectURL(new Blob([sw],{type:'application/javascript'}))).catch(()=>{});
+    const tasks = state.plan[today] || [];
+    document.getElementById('today-list').innerHTML = tasks.length ? tasks.map(t => `<div class="item-row"><div><small>${t.sub}</small><br><b>${t.mat}: ${t.desc}</b></div><span class="status-tag">${t.info}</span></div>`).join('') : '<p style="text-align:center; opacity:0.5;">予定なし</p>';
+
+    document.getElementById('registered-list').innerHTML = state.exams.map(e => e.materials.map(m => `<div class="item-row"><div><small>${e.subject}</small><br><b>${m.name}</b></div><button class="danger" onclick="deleteMat(${e.id}, ${m.id})">削除</button></div>`).join('')).join('') || '<p style="opacity:0.5;">登録なし</p>';
+
+    // --- 進捗入力エリアの修正 ---
+    document.getElementById('progress-input-area').innerHTML = state.exams.map(e => e.materials.map(m => {
+        if (m.type === 'list') {
+            return `<div class="glass-card"><h3>${m.name}</h3><div class="item-row"><span>一括</span><input type="number" onchange="updateProg(${m.id},-1,this.value)" style="width:80px;"><span>周</span></div>${m.items.map((it, idx) => `<div class="item-row"><span>${it.l}</span><input type="number" value="${it.d}" onchange="updateProg(${m.id},${idx},this.value)" style="width:60px;"></div>`).join('')}</div>`;
+        } else {
+            let drs = m.doneRounds || new Array(m.rounds).fill(0);
+            let infoText = m.type === 'range' ? `全体範囲: ${m.start}〜${m.end}` : `全体量: ${m.total}`;
+            return `<div class="glass-card"><h3>${m.name}</h3>
+                <div style="font-size: 0.8rem; color: #a0aec0; margin-bottom: 8px;">${infoText} ${m.unit||''}</div>
+                ${drs.map((dr, idx) => {
+                    let val = dr;
+                    if(m.type === 'range' && dr > 0) val = `${m.start}-${m.start + dr - 1}`;
+                    return `<div class="item-row"><span>${idx+1}周目</span><input type="${m.type==='range'?'text':'number'}" value="${val}" onchange="updateProg(${m.id},${idx+1},this.value)" style="width:100px;"><span>${m.type==='range'?'':(m.unit||'')}</span></div>`
+                }).join('')}</div>`;
         }
-    };
-    window.addEventListener('beforeunload',save);
-    window.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden') save();});
+    }).join('')).join('') || '<p style="opacity:0.5;">登録なし</p>';
+
+    let planHtml = '';
+    Object.keys(state.plan).sort().forEach(d => {
+        planHtml += `<h4 style="color:var(--accent); border-bottom:1px solid #333; margin-bottom:10px; margin-top:20px;">${d}</h4>`;
+        state.plan[d].forEach((t, idx) => {
+            const content = isPlanEditing ? `<input type="text" class="plan-edit-input" value="${t.desc}" oninput="updatePlanManual('${d}', ${idx}, this.value)">` : `<b>${t.mat}: ${t.desc}</b>`;
+            planHtml += `<div class="item-row"><div style="flex: 1;"><small>${t.sub}</small><br>${content}</div><span class="status-tag">${t.info}</span></div>`;
+        });
+    });
+    document.getElementById('full-plan-area').innerHTML = planHtml || '<p style="opacity:0.5;">計画がありません</p>';
+}
+
+window.onload = () => {
+    load();
+    document.getElementById('sys-start-date').value = toYMD(new Date());
+    toggleMode(); // 初期UI状態を反映
+    render();
+    if ('serviceWorker' in navigator) {
+        const sw = "self.addEventListener('install',e=>e.waitUntil(self.skipWaiting()));self.addEventListener('activate',e=>e.waitUntil(self.clients.claim()));self.addEventListener('fetch',e=>{});";
+        navigator.serviceWorker.register(URL.createObjectURL(new Blob([sw], {type: 'application/javascript'}))).catch(()=>{});
+    }
+};
+
+window.addEventListener('beforeunload', save);
+window.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') save(); });
 </script>
 </body>
 </html>
