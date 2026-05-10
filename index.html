@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ReplanToWin</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>">
-    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>">
+    <link rel="icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==" type="image/png">
+    <link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -15,9 +15,12 @@
             --accent-glow: rgba(0, 242, 255, 0.3);
             --text: #e2e8f0;
             --danger: #ff4757;
-            --success: #2ed573;
+            --final: #ff6bfd;
         }
-        * { box-sizing: border-box; }
+
+        * {
+            box-sizing: border-box;
+        }
         body {
             background-color: var(--bg);
             background-image: radial-gradient(circle at 50% 50%, #0f172a 0%, #020617 100%);
@@ -25,7 +28,7 @@
             font-family: 'Noto Sans JP', sans-serif;
             margin: 0;
             min-height: 100vh;
-            padding-bottom: 30px;
+            padding-bottom: 60px;
         }
         nav {
             display: flex;
@@ -37,7 +40,7 @@
             top: 0;
             z-index: 1000;
             flex-wrap: wrap;
-            gap: 8px;
+            gap: 6px;
         }
         nav div {
             cursor: pointer;
@@ -46,11 +49,15 @@
             font-family: 'Orbitron';
             font-weight: bold;
             letter-spacing: 1px;
+            white-space: nowrap;
             padding: 4px 8px;
+            border-radius: 4px;
+            transition: all 0.2s;
         }
         nav div.active {
             color: var(--accent);
             text-shadow: 0 0 10px var(--accent);
+            background: rgba(0, 242, 255, 0.08);
         }
         .view {
             max-width: 800px;
@@ -62,7 +69,14 @@
             display: block;
             animation: fadeIn 0.3s ease;
         }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
         .glass-card {
             background: var(--panel);
             border: 1px solid rgba(255, 255, 255, 0.1);
@@ -77,13 +91,6 @@
             border-left: 3px solid var(--accent);
             padding-left: 10px;
         }
-        h4 {
-            font-size: 0.9rem;
-            color: var(--accent);
-            border-bottom: 1px solid #333;
-            margin-bottom: 10px;
-            margin-top: 20px;
-        }
         button {
             background: linear-gradient(135deg, var(--accent), #0099ff);
             color: #000;
@@ -95,8 +102,11 @@
             width: 100%;
             font-size: 1rem;
             margin-bottom: 10px;
+            transition: all 0.2s;
         }
-        button:active { transform: scale(0.98); }
+        button:active {
+            transform: scale(0.98);
+        }
         button.secondary {
             background: transparent;
             border: 1px solid var(--accent);
@@ -106,14 +116,6 @@
             background: rgba(255, 71, 87, 0.1);
             border: 1px solid var(--danger);
             color: var(--danger);
-            padding: 8px 12px;
-            width: auto;
-            font-size: 0.8rem;
-        }
-        button.success {
-            background: rgba(46, 213, 115, 0.2);
-            border: 1px solid var(--success);
-            color: var(--success);
             padding: 8px 12px;
             width: auto;
             font-size: 0.8rem;
@@ -129,6 +131,7 @@
             width: 100%;
             margin-bottom: 12px;
             font-size: 1rem;
+            font-family: inherit;
         }
         .plan-edit-input {
             background: rgba(255, 255, 255, 0.1);
@@ -147,7 +150,6 @@
             padding: 12px 0;
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
             gap: 10px;
-            flex-wrap: wrap;
         }
         .status-tag {
             font-size: 0.65rem;
@@ -157,6 +159,10 @@
             border-radius: 4px;
             font-weight: bold;
             white-space: nowrap;
+        }
+        .status-tag.final {
+            background: var(--final);
+            color: #000;
         }
         .checkbox-group {
             display: flex;
@@ -192,29 +198,65 @@
             justify-content: center;
         }
         @keyframes pulse {
-            0% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.1); opacity: 0.7; }
-            100% { transform: scale(1); opacity: 1; }
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.1);
+                opacity: 0.7;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
         }
-        .chunk-badge {
-            display: inline-block;
-            background: rgba(0,242,255,0.2);
+        .chunk-block {
+            margin: 8px 0;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            border-left: 2px solid rgba(0, 242, 255, 0.3);
+        }
+        .chunk-block .chunk-header {
+            font-size: 0.8rem;
             color: var(--accent);
-            font-size: 0.7rem;
-            padding: 2px 6px;
-            border-radius: 4px;
-            margin-right: 4px;
+            margin-bottom: 6px;
+            font-weight: bold;
+            letter-spacing: 0.5px;
         }
-        .inline-input {
-            width: 80px !important;
-            display: inline-block;
-            margin: 0 6px;
-            padding: 8px;
-            font-size: 0.9rem;
+        .chunk-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 4px 0;
+            border: none;
+            gap: 8px;
         }
-        .small-text {
+        .chunk-row input {
+            width: 70px;
+            padding: 6px;
+            margin: 0;
+            font-size: 0.8rem;
+            text-align: center;
+        }
+        .chunk-row span {
             font-size: 0.75rem;
-            color: #a0aec0;
+            opacity: 0.8;
+        }
+        .final-badge {
+            display: inline-block;
+            font-size: 0.6rem;
+            background: var(--final);
+            color: #000;
+            padding: 1px 5px;
+            border-radius: 3px;
+            margin-left: 4px;
+            font-weight: bold;
+        }
+        small {
+            opacity: 0.7;
+            font-size: 0.75rem;
         }
     </style>
 </head>
@@ -256,6 +298,7 @@
                 <input type="date" id="sys-start-date" style="width: auto; margin: 0; padding: 8px;">
             </div>
         </div>
+
         <button id="main-plan-btn" onclick="generatePlan()" class="secondary">✨ AI学習計画を生成する</button>
     </div>
 
@@ -263,10 +306,12 @@
         <div class="glass-card">
             <h3>新しい教材を追加する</h3>
             <input id="in-sub" placeholder="科目 (例: 数学、英語)">
+
             <div style="margin-bottom: 12px;">
                 <label style="font-size: 0.8rem; color: var(--accent); display: block; margin-bottom: 4px;">試験日（または完了目標日）：</label>
                 <input id="in-date" type="date" style="margin-bottom: 0;">
             </div>
+
             <div style="margin-bottom: 15px;">
                 <label style="font-size: 0.8rem; color: var(--accent); display: block; margin-bottom: 4px;">この教材を学習する曜日：</label>
                 <div class="checkbox-group" id="in-days">
@@ -279,12 +324,14 @@
                     <label><input type="checkbox" value="0" checked>日</label>
                 </div>
             </div>
+
             <select id="in-mode" onchange="toggleMode()">
                 <option value="range">ページ範囲 (1-200 など)</option>
                 <option value="vol">合計件数 (1500語 など)</option>
                 <option value="list">項目リスト (プリントAなど)</option>
-                <option value="chunked">小刻み復習モード (チャンク分割)</option>
+                <option value="chunk">小刻み復習 (チャンク分割)</option>
             </select>
+
             <div id="ui-range">
                 <input id="in-name-range" placeholder="教材名">
                 <input id="in-val-range" placeholder="範囲 (例: 1-150)">
@@ -299,17 +346,18 @@
                 <input id="in-name-list" placeholder="教材名">
                 <textarea id="in-val-list" placeholder="項目をカンマ(,)で区切って入力" rows="3"></textarea>
             </div>
-            <div id="ui-chunked" style="display:none;">
-                <input id="in-name-chunked" placeholder="教材名">
-                <div style="display:flex; gap:10px; flex-wrap:wrap;">
-                    <input id="in-val-chunked-range" placeholder="範囲 (例: 1-150)" style="flex:2;">
-                    <input id="in-chunk-size" type="number" value="10" placeholder="チャンクサイズ" style="flex:1;">
+            <div id="ui-chunk" style="display:none;">
+                <div style="background:rgba(0,242,255,0.05);border:1px solid rgba(0,242,255,0.2);border-radius:8px;padding:12px;margin-bottom:12px;">
+                    <p style="font-size:0.75rem;color:var(--accent);margin:0 0 8px 0;">📐 <b>小刻み復習アルゴリズム:</b> 教材をチャンク分割 → 各チャンクを(総周回数-1)回連続学習 → 最終1周で全チャンクを確認</p>
                 </div>
-                <input id="in-unit-chunked" value="P" placeholder="単位">
+                <input id="in-name-chunk" placeholder="教材名">
+                <input id="in-val-chunk" placeholder="範囲 (例: 1-200)">
+                <input id="in-chunk-size" type="number" placeholder="チャンクサイズ (例: 20)" min="1" value="20">
+                <input id="in-unit-chunk" value="P" placeholder="単位">
             </div>
             <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
                 <span>目標周回数:</span>
-                <input id="in-rounds" type="number" value="3" style="width: 80px; margin: 0;">
+                <input id="in-rounds" type="number" value="3" style="width: 80px; margin: 0;" min="1">
             </div>
             <button onclick="addMaterial()">この教材をリストに登録する</button>
         </div>
@@ -325,12 +373,9 @@
     </div>
 
     <div id="view-plan" class="view">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 10px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
             <h3 style="margin: 0;">全日程の計画表</h3>
-            <div style="display: flex; gap: 8px;">
-                <button id="btn-edit-plan" onclick="togglePlanEdit()" class="secondary" style="width: auto; padding: 6px 15px; margin: 0; font-size: 0.8rem;">✎ 編集</button>
-                <button id="btn-export-ics" onclick="exportICS()" class="success" style="width: auto; padding: 6px 15px; margin: 0; font-size: 0.8rem;" title="Googleカレンダー用ICSファイルをダウンロード">📅 カレンダー出力</button>
-            </div>
+            <button id="btn-edit-plan" onclick="togglePlanEdit()" class="secondary" style="width: auto; padding: 6px 15px; margin: 0; font-size: 0.8rem;">✎ 編集</button>
         </div>
         <div id="full-plan-area"></div>
     </div>
@@ -360,13 +405,8 @@
                 '0');
         }
 
-        function toYMDDateOnly(dStr) {
-            const parts = dStr.split('-').map(Number);
-            return new Date(parts[0], parts[1] - 1, parts[2]);
-        }
-
         // --- DATA ---
-        const KEY = 'replan_to_win_v7_data';
+        const KEY = 'replan_v7_chunk_data';
         let state = { exams: [], plan: {} };
         let isPlanEditing = false;
 
@@ -375,8 +415,26 @@
             if (saved) {
                 try {
                     state = JSON.parse(saved);
+                    // 後方互換性: chunkProgressがないchunkタイプの教材を修復
+                    state.exams.forEach(e => {
+                        e.materials.forEach(m => {
+                            if (m.type === 'chunk' && !m.chunkProgress) {
+                                m.chunkProgress = {};
+                            }
+                            if (m.type === 'chunk' && !m.chunks && m.start && m.end && m.chunkSize) {
+                                // chunks配列を再構築
+                                const chunks = [];
+                                let cur = m.start;
+                                while (cur <= m.end) {
+                                    chunks.push({ start: cur, end: Math.min(cur + m.chunkSize - 1, m.end) });
+                                    cur += m.chunkSize;
+                                }
+                                m.chunks = chunks;
+                            }
+                        });
+                    });
                 } catch (e) {
-                    console.error('データの読み込みに失敗しました', e);
+                    console.error('データ読み込みエラー', e);
                     state = { exams: [], plan: {} };
                 }
             }
@@ -399,9 +457,10 @@
             const target = document.getElementById(`view-${id}`);
             if (target) {
                 target.classList.add('active');
-                const navItem = document.getElementById(`nav-${id}`);
-                if (navItem) navItem.classList.add('active');
+                const navEl = document.getElementById(`nav-${id}`);
+                if (navEl) navEl.classList.add('active');
             }
+            render();
         }
 
         function toggleMode() {
@@ -409,7 +468,7 @@
             document.getElementById('ui-range').style.display = m === 'range' ? 'block' : 'none';
             document.getElementById('ui-vol').style.display = m === 'vol' ? 'block' : 'none';
             document.getElementById('ui-list').style.display = m === 'list' ? 'block' : 'none';
-            document.getElementById('ui-chunked').style.display = m === 'chunked' ? 'block' : 'none';
+            document.getElementById('ui-chunk').style.display = m === 'chunk' ? 'block' : 'none';
         }
 
         function togglePlanEdit() {
@@ -433,8 +492,16 @@
             const date = document.getElementById('in-date').value;
             if (!sub || !date) return alert('科目名と日付を入力してください');
 
-            const selectedDays = Array.from(document.querySelectorAll('#in-days input[type="checkbox"]:checked')).map(cb =>
+            // 曜日取得
+            let selectedDays = Array.from(document.querySelectorAll('#in-days input[type="checkbox"]:checked')).map(cb =>
                 parseInt(cb.value));
+            if (selectedDays.length === 0) {
+                const activeView = document.querySelector('.view.active');
+                if (activeView) {
+                    selectedDays = Array.from(activeView.querySelectorAll('input[type="checkbox"]:checked')).map(cb =>
+                        parseInt(cb.value));
+                }
+            }
             if (selectedDays.length === 0) {
                 return alert('教材を学習する曜日を1つ以上選択してください');
             }
@@ -448,9 +515,10 @@
             const mode = document.getElementById('in-mode').value;
             const rounds = parseInt(document.getElementById('in-rounds').value) || 1;
             const mId = Date.now() + Math.floor(Math.random() * 10000);
-            const common = { id: mId, rounds, days: selectedDays };
 
             let newMat;
+            const common = { id: mId, rounds, days: selectedDays };
+
             if (mode === 'range') {
                 let val = document.getElementById('in-val-range').value;
                 val = val.replace(/[０-９]/g, s => String.fromCharCode(s.charCodeAt(0) - 0xFEE0)).replace(/\s+/g, '');
@@ -466,8 +534,8 @@
                     unit: document.getElementById('in-unit-range').value
                 };
             } else if (mode === 'vol') {
-                let val = document.getElementById('in-val-vol').value.replace(/[０-９]/g, s => String.fromCharCode(s.charCodeAt(
-                    0) - 0xFEE0));
+                let val = document.getElementById('in-val-vol').value.replace(/[０-９]/g, s => String.fromCharCode(s
+                    .charCodeAt(0) - 0xFEE0));
                 const total = parseInt(val);
                 if (!total) return alert('合計件数を入力してください');
                 newMat = {
@@ -487,35 +555,40 @@
                     name: document.getElementById('in-name-list').value || '教材',
                     items: items.map(l => ({ l: l.trim(), d: 0 }))
                 };
-            } else if (mode === 'chunked') {
-                let val = document.getElementById('in-val-chunked-range').value;
+            } else if (mode === 'chunk') {
+                let val = document.getElementById('in-val-chunk').value;
                 val = val.replace(/[０-９]/g, s => String.fromCharCode(s.charCodeAt(0) - 0xFEE0)).replace(/\s+/g, '');
                 const m = val.match(/^(\d+)[-〜~ー](\d+)$/);
-                if (!m) return alert('チャンク分割では範囲を 1-100 の形式で入力してください');
-                const chunkSize = parseInt(document.getElementById('in-chunk-size').value) || 10;
-                if (chunkSize <= 0) return alert('チャンクサイズは1以上を指定してください');
+                if (!m) return alert('範囲は 1-200 の形式で入力してください');
                 const start = parseInt(m[1]);
                 const end = parseInt(m[2]);
-                const totalUnits = end - start + 1;
-                const chunks = [];
-                for (let s = start; s <= end; s += chunkSize) {
-                    const e = Math.min(s + chunkSize - 1, end);
-                    chunks.push({ start: s, end: e, desc: `${s}〜${e}`, doneCount: 0 });
+                const chunkSize = parseInt(document.getElementById('in-chunk-size').value);
+                if (!chunkSize || chunkSize < 1) return alert('チャンクサイズを1以上で入力してください');
+                if (chunkSize > (end - start + 1)) {
+                    return alert('チャンクサイズが全体範囲より大きいです。範囲を見直してください。');
                 }
+
+                // チャンクを計算
+                const chunks = [];
+                let cur = start;
+                while (cur <= end) {
+                    chunks.push({ start: cur, end: Math.min(cur + chunkSize - 1, end) });
+                    cur += chunkSize;
+                }
+
                 newMat = {
                     ...common,
-                    type: 'chunked',
-                    name: document.getElementById('in-name-chunked').value || '教材',
+                    type: 'chunk',
+                    name: document.getElementById('in-name-chunk').value || '教材',
                     start,
                     end,
                     chunkSize,
                     chunks,
-                    unit: document.getElementById('in-unit-chunked').value || 'P',
-                    totalUnits
+                    chunkProgress: {},
+                    unit: document.getElementById('in-unit-chunk').value
                 };
             }
 
-            if (!newMat) return;
             exam.materials.push(newMat);
             playSound(800, 0.2);
             save();
@@ -524,6 +597,7 @@
 
         function generatePlan() {
             if (state.exams.length === 0) return alert('先に教材を登録してください');
+
             playSound(400, 0.5);
             document.getElementById('loading').style.display = 'flex';
 
@@ -554,68 +628,10 @@
                             if (availableDates.length === 0) availableDates.push(new Date(globalStart));
                             const daysCount = availableDates.length;
 
-                            if (mat.type === 'chunked') {
-                                // 小刻み復習モードのアルゴリズム
-                                const chunks = mat.chunks;
-                                const rounds = mat.rounds;
-                                // タスクキューを作成
-                                let taskQueue = [];
-                                if (rounds >= 1) {
-                                    // 各チャンクについて (rounds - 1) 回連続で学習
-                                    const preRounds = rounds - 1;
-                                    if (preRounds > 0) {
-                                        chunks.forEach(chunk => {
-                                            for (let r = 1; r <= preRounds; r++) {
-                                                taskQueue.push({
-                                                    chunkIndex: chunks.indexOf(chunk),
-                                                    desc: `${chunk.desc}${mat.unit || ''}`,
-                                                    info: `${r}周目 (小刻み)`,
-                                                    round: r
-                                                });
-                                            }
-                                        });
-                                    }
-                                    // 最後の1周は全チャンクを1回ずつ
-                                    chunks.forEach(chunk => {
-                                        taskQueue.push({
-                                            chunkIndex: chunks.indexOf(chunk),
-                                            desc: `${chunk.desc}${mat.unit || ''}`,
-                                            info: `${rounds}周目 (最終確認)`,
-                                            round: rounds
-                                        });
-                                    });
-                                }
-
-                                const totalTasks = taskQueue.length;
-                                if (totalTasks > 0 && daysCount > 0) {
-                                    const perDay = Math.ceil(totalTasks / daysCount);
-                                    let taskIdx = 0;
-                                    for (let i = 0; i < daysCount && taskIdx < totalTasks; i++) {
-                                        const k = toYMD(availableDates[i]);
-                                        if (!state.plan[k]) state.plan[k] = [];
-                                        let dayRem = perDay;
-                                        while (dayRem > 0 && taskIdx < totalTasks) {
-                                            const t = taskQueue[taskIdx];
-                                            state.plan[k].push({
-                                                sub: exam.subject,
-                                                mat: mat.name,
-                                                desc: t.desc,
-                                                info: t.info,
-                                                id: mat.id,
-                                                chunkIndex: t.chunkIndex,
-                                                round: t.round
-                                            });
-                                            taskIdx++;
-                                            dayRem--;
-                                        }
-                                    }
-                                }
-                            } else if (mat.type === 'list') {
+                            if (mat.type === 'list') {
                                 let queue = [];
                                 for (let r = 1; r <= mat.rounds; r++) {
-                                    mat.items.forEach(it => {
-                                        if (it.d < r) queue.push({ l: it.l, r: r });
-                                    });
+                                    mat.items.forEach(it => { if (it.d < r) queue.push({ l: it.l, r: r }); });
                                 }
                                 const perDay = Math.ceil(queue.length / daysCount);
                                 let cur = 0;
@@ -635,10 +651,71 @@
                                         }
                                     }
                                 }
+                            } else if (mat.type === 'chunk') {
+                                // ★ 小刻み復習モードの計画生成 ★
+                                const chunkProgress = mat.chunkProgress || {};
+                                let queue = [];
+
+                                // フェーズ1: 深堀り学習（各チャンクを rounds-1 回連続）
+                                for (let ci = 0; ci < mat.chunks.length; ci++) {
+                                    const chunk = mat.chunks[ci];
+                                    for (let ri = 1; ri < mat.rounds; ri++) {
+                                        const key = `${ci}-${ri}`;
+                                        const done = chunkProgress[key] || 0;
+                                        const chunkSize = chunk.end - chunk.start + 1;
+                                        const rem = chunkSize - done;
+                                        if (rem > 0) {
+                                            queue.push({ ci, ri, chunk, rem, phase: 'deep' });
+                                        }
+                                    }
+                                }
+
+                                // フェーズ2: 最終確認（全チャンクを1回ずつ）
+                                for (let ci = 0; ci < mat.chunks.length; ci++) {
+                                    const chunk = mat.chunks[ci];
+                                    const ri = mat.rounds;
+                                    const key = `${ci}-${ri}`;
+                                    const done = chunkProgress[key] || 0;
+                                    const chunkSize = chunk.end - chunk.start + 1;
+                                    const rem = chunkSize - done;
+                                    if (rem > 0) {
+                                        queue.push({ ci, ri, chunk, rem, phase: 'final' });
+                                    }
+                                }
+
+                                if (queue.length > 0) {
+                                    const perDay = Math.ceil(queue.length / daysCount);
+                                    let qIdx = 0;
+                                    for (let i = 0; i < daysCount && qIdx < queue.length; i++) {
+                                        const k = toYMD(availableDates[i]);
+                                        if (!state.plan[k]) state.plan[k] = [];
+                                        let daySlots = perDay;
+                                        while (daySlots > 0 && qIdx < queue.length) {
+                                            const q = queue[qIdx];
+                                            const chunk = q.chunk;
+                                            const descText =
+                                                `${chunk.start}〜${chunk.end}${mat.unit || ''}`;
+                                            const infoText = q.phase === 'final' ?
+                                                `🏁最終確認` :
+                                                `${q.ri}周目`;
+                                            state.plan[k].push({
+                                                sub: exam.subject,
+                                                mat: mat.name,
+                                                desc: descText,
+                                                info: infoText,
+                                                id: mat.id,
+                                                chunkIdx: q.ci,
+                                                roundIdx: q.ri
+                                            });
+                                            qIdx++;
+                                            daySlots--;
+                                        }
+                                    }
+                                }
                             } else {
+                                // range / vol
                                 let unitsPerRound = (mat.type === 'range' ? (mat.end - mat.start + 1) : mat.total);
                                 if (!mat.doneRounds) mat.doneRounds = new Array(mat.rounds).fill(0);
-                                while (mat.doneRounds.length < mat.rounds) mat.doneRounds.push(0);
 
                                 let queue = [];
                                 for (let r = 0; r < mat.rounds; r++) {
@@ -646,8 +723,8 @@
                                     if (rem > 0) {
                                         queue.push({
                                             r: r + 1,
-                                            start: mat.type === 'range' ? (mat.start + (mat.doneRounds[r] ||
-                                                0)) : null,
+                                            start: mat.type === 'range' ? (mat.start + (mat
+                                                .doneRounds[r] || 0)) : null,
                                             rem
                                         });
                                     }
@@ -665,8 +742,8 @@
                                             let q = queue[qIdx];
                                             let amt = Math.min(dayRem, q.rem);
                                             let descText = mat.type === 'range' ?
-                                                `${q.start}〜${q.start + amt - 1}${mat.unit||''}` :
-                                                `${amt}${mat.unit||''}`;
+                                                `${q.start}〜${q.start + amt - 1}${mat.unit || ''}` :
+                                                `${amt}${mat.unit || ''}`;
                                             if (mat.type === 'range') q.start += amt;
                                             state.plan[k].push({
                                                 sub: exam.subject,
@@ -691,24 +768,31 @@
                 } catch (e) {
                     document.getElementById('loading').style.display = 'none';
                     console.error(e);
-                    alert('エラーが発生しました');
+                    alert('エラーが発生しました: ' + e.message);
                 }
             }, 500);
         }
 
-        function updateProg(matId, itIdx, val) {
+        function updateProg(matId, itIdx, val, chunkIdx) {
             const m = findMat(matId);
             if (!m) return;
 
-            if (m.type === 'chunked') {
-                if (itIdx >= 0 && itIdx < m.chunks.length) {
-                    const count = parseInt(val) || 0;
-                    m.chunks[itIdx].doneCount = Math.max(0, Math.min(m.rounds, count));
+            if (m.type === 'chunk') {
+                // chunkIdx はチャンクインデックス (0-indexed), itIdx は周回数 (1-indexed)
+                if (chunkIdx === undefined || chunkIdx === null) return;
+                if (!m.chunkProgress) m.chunkProgress = {};
+                const key = `${chunkIdx}-${itIdx}`;
+                let parsed = parseInt(val) || 0;
+                const chunk = m.chunks[chunkIdx];
+                if (chunk) {
+                    const chunkSize = chunk.end - chunk.start + 1;
+                    parsed = Math.max(0, Math.min(parsed, chunkSize));
                 }
+                m.chunkProgress[key] = parsed;
             } else if (m.type === 'list') {
                 const r = parseInt(val) || 0;
                 if (itIdx === -1) m.items.forEach(it => it.d = r);
-                else if (itIdx < m.items.length) m.items[itIdx].d = r;
+                else if (m.items[itIdx]) m.items[itIdx].d = r;
             } else {
                 let parsed = 0;
                 if (m.type === 'range' && typeof val === 'string' && val.match(/\d+[-〜~ー]\d+/)) {
@@ -721,9 +805,7 @@
                 if (itIdx > 0) {
                     if (!m.doneRounds) m.doneRounds = new Array(m.rounds).fill(0);
                     while (m.doneRounds.length < m.rounds) m.doneRounds.push(0);
-                    if (itIdx - 1 < m.doneRounds.length) {
-                        m.doneRounds[itIdx - 1] = Math.max(0, parsed);
-                    }
+                    m.doneRounds[itIdx - 1] = Math.max(0, parsed);
                 }
             }
             save();
@@ -744,73 +826,6 @@
             return null;
         }
 
-        // --- ICS Export ---
-        function exportICS() {
-            if (Object.keys(state.plan).length === 0) {
-                return alert('計画がありません。先に計画を生成してください。');
-            }
-            playSound(700, 0.15);
-            let icsContent = [
-                'BEGIN:VCALENDAR',
-                'VERSION:2.0',
-                'PRODID:-//ReplanToWin//Learning Plan//JA',
-                'CALSCALE:GREGORIAN',
-                'METHOD:PUBLISH'
-            ];
-
-            const sortedDates = Object.keys(state.plan).sort();
-            sortedDates.forEach(dateStr => {
-                const tasks = state.plan[dateStr];
-                if (!tasks || tasks.length === 0) return;
-
-                // 日付をYYYYMMDD形式に変換
-                const dateParts = dateStr.split('-');
-                const dtStart = dateParts.join('');
-
-                // 終日イベントの終了日は翌日
-                const d = new Date(parseInt(dateParts[0]), parseInt(dateParts[1]) - 1, parseInt(dateParts[2]));
-                d.setDate(d.getDate() + 1);
-                const dtEnd = d.getFullYear() + String(d.getMonth() + 1).padStart(2, '0') + String(d.getDate()).padStart(2,
-                    '0');
-
-                // 件名: 科目名を列挙（重複除去）
-                const subjects = [...new Set(tasks.map(t => t.sub))];
-                const summary = '【' + subjects.join('・') + '】学習計画';
-
-                // 説明: タスク詳細
-                const descriptionLines = tasks.map(t => `${t.sub} - ${t.mat}: ${t.desc} (${t.info})`);
-                const description = descriptionLines.join('\\n');
-
-                // エスケープ処理
-                const escapeICS = (str) => {
-                    return str.replace(/[,;]/g, '\\$&').replace(/\n/g, '\\n');
-                };
-
-                icsContent.push('BEGIN:VEVENT');
-                icsContent.push(`DTSTART;VALUE=DATE:${dtStart}`);
-                icsContent.push(`DTEND;VALUE=DATE:${dtEnd}`);
-                icsContent.push(`SUMMARY:${escapeICS(summary)}`);
-                icsContent.push(`DESCRIPTION:${escapeICS(description)}`);
-                icsContent.push('TRANSP:TRANSPARENT');
-                icsContent.push('END:VEVENT');
-            });
-
-            icsContent.push('END:VCALENDAR');
-
-            const blob = new Blob([icsContent.join('\r\n')], { type: 'text/calendar;charset=utf-8' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            const todayStr = toYMD(new Date()).replace(/-/g, '');
-            a.download = `ReplanToWin_学習計画_${todayStr}.ics`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-            playSound(900, 0.2);
-        }
-
-        // --- RENDER ---
         function render() {
             const today = toYMD(new Date());
             const hasPlan = Object.keys(state.plan).length > 0;
@@ -822,12 +837,13 @@
             let tAll = 0,
                 tDone = 0;
             state.exams.forEach(e => e.materials.forEach(m => {
-                if (m.type === 'chunked') {
-                    tAll += m.chunks.length * m.rounds;
-                    tDone += m.chunks.reduce((s, ch) => s + (ch.doneCount || 0), 0);
-                } else if (m.type === 'list') {
+                if (m.type === 'list') {
                     tAll += m.items.length * m.rounds;
                     tDone += m.items.reduce((s, i) => s + i.d, 0);
+                } else if (m.type === 'chunk') {
+                    const totalItems = m.end - m.start + 1;
+                    tAll += totalItems * m.rounds;
+                    tDone += Object.values(m.chunkProgress || {}).reduce((a, b) => a + b, 0);
                 } else {
                     let units = (m.type === 'range' ? (m.end - m.start + 1) : m.total);
                     tAll += units * m.rounds;
@@ -840,103 +856,116 @@
                 const dates = state.exams.map(e => new Date(e.date));
                 const diff = Math.ceil((Math.min(...dates) - new Date().setHours(0, 0, 0, 0)) / 86400000);
                 document.getElementById('stat-days').innerText = Math.max(0, diff) + '日';
+            } else {
+                document.getElementById('stat-days').innerText = '--';
             }
 
+            // 本日のタスク
             const tasks = state.plan[today] || [];
             document.getElementById('today-list').innerHTML = tasks.length ?
-                tasks.map(t => `
-                    <div class="item-row">
-                        <div><small>${t.sub}</small><br><b>${t.mat}: ${t.desc}</b></div>
-                        <span class="status-tag">${t.info}</span>
-                    </div>`).join('') :
+                tasks.map(t => {
+                    const isFinal = t.info && t.info.includes('最終確認');
+                    const tagClass = isFinal ? 'status-tag final' : 'status-tag';
+                    return `<div class="item-row"><div><small>${t.sub}</small><br><b>${t.mat}: ${t.desc}</b></div><span class="${tagClass}">${t.info}</span></div>`;
+                }).join('') :
                 '<p style="text-align:center; opacity:0.5;">予定なし</p>';
 
+            // 登録済み教材リスト
             document.getElementById('registered-list').innerHTML = state.exams.map(e =>
                 e.materials.map(m => {
-                    let typeLabel = m.type === 'chunked' ? '小刻み復習' : m.type === 'list' ? 'リスト' : m
-                        .type === 'range' ? '範囲' : '数量';
-                    return `<div class="item-row">
-                        <div><small>${e.subject} [${typeLabel}]</small><br><b>${m.name}</b></div>
-                        <button class="danger" onclick="deleteMat(${e.id}, ${m.id})">削除</button>
-                    </div>`;
+                    let typeLabel = '';
+                    switch (m.type) {
+                        case 'range':
+                            typeLabel = `範囲: ${m.start}〜${m.end}${m.unit||''}`;
+                            break;
+                        case 'vol':
+                            typeLabel = `合計: ${m.total}${m.unit||''}`;
+                            break;
+                        case 'list':
+                            typeLabel = `項目: ${m.items.length}個`;
+                            break;
+                        case 'chunk':
+                            typeLabel = `チャンク: ${m.start}〜${m.end} (${m.chunkSize}${m.unit||''}×${m.chunks.length}塊)`;
+                            break;
+                    }
+                    return `<div class="item-row"><div><small>${e.subject} | ${typeLabel}</small><br><b>${m.name}</b> <small>${m.rounds}周</small></div><button class="danger" onclick="deleteMat(${e.id}, ${m.id})">削除</button></div>`;
                 }).join('')
             ).join('') || '<p style="opacity:0.5;">登録なし</p>';
 
-            // 進捗入力エリア
+            // --- 進捗入力エリア ---
             document.getElementById('progress-input-area').innerHTML = state.exams.map(e =>
                 e.materials.map(m => {
-                    if (m.type === 'chunked') {
-                        const chunks = m.chunks || [];
-                        return `<div class="glass-card">
-                            <h3>${m.name} <span class="small-text">(小刻み復習: ${m.start}〜${m.end}${m.unit||''} / チャンクサイズ ${m.chunkSize})</span></h3>
-                            ${chunks.map((ch, idx) => `
-                                <div class="item-row">
-                                    <span>チャンク${idx+1}: ${ch.desc}${m.unit||''}</span>
-                                    <input type="number" value="${ch.doneCount||0}" min="0" max="${m.rounds}" 
-                                        onchange="updateProg(${m.id},${idx},this.value)" style="width:80px;">
-                                    <span>/ ${m.rounds}回</span>
-                                </div>
-                            `).join('')}
-                        </div>`;
-                    } else if (m.type === 'list') {
-                        return `<div class="glass-card">
-                            <h3>${m.name}</h3>
-                            <div class="item-row"><span>一括</span><input type="number" onchange="updateProg(${m.id},-1,this.value)" style="width:80px;"><span>周</span></div>
-                            ${m.items.map((it, idx) => `
-                                <div class="item-row">
-                                    <span>${it.l}</span>
-                                    <input type="number" value="${it.d}" onchange="updateProg(${m.id},${idx},this.value)" style="width:60px;">
-                                </div>
-                            `).join('')}
-                        </div>`;
+                    if (m.type === 'list') {
+                        return `<div class="glass-card"><h3>${m.name} <small>(${e.subject})</small></h3>
+                        <div class="item-row"><span>一括設定</span><input type="number" onchange="updateProg(${m.id},-1,this.value)" style="width:80px;" placeholder="周回数"><span>周</span></div>
+                        ${m.items.map((it, idx) => `<div class="item-row"><span>${it.l}</span><input type="number" value="${it.d}" onchange="updateProg(${m.id},${idx},this.value)" style="width:60px;"></div>`).join('')}</div>`;
+                    } else if (m.type === 'chunk') {
+                        const chunkProgress = m.chunkProgress || {};
+                        let html =
+                            `<div class="glass-card"><h3>${m.name} <small>(${e.subject})</small></h3>`;
+                        html +=
+                            `<div style="font-size:0.8rem;color:#a0aec0;margin-bottom:10px;">📐 全体: ${m.start}〜${m.end}${m.unit||''} | チャンクサイズ: ${m.chunkSize}${m.unit||''} | ${m.chunks.length}塊 | ${m.rounds}周</div>`;
+                        m.chunks.forEach((chunk, ci) => {
+                            const chunkSize = chunk.end - chunk.start + 1;
+                            html +=
+                                `<div class="chunk-block"><div class="chunk-header">▼ Chunk ${ci+1} (${chunk.start}〜${chunk.end}${m.unit||''}) <small>${chunkSize}${m.unit||''}</small></div>`;
+                            for (let ri = 1; ri <= m.rounds; ri++) {
+                                const key = `${ci}-${ri}`;
+                                const val = chunkProgress[key] || 0;
+                                const isFinal = ri === m.rounds;
+                                html += `<div class="chunk-row">
+                                <span style="flex:1;font-size:0.75rem;">${ri}周目${isFinal ? ' <span class="final-badge">最終確認</span>' : ''}</span>
+                                <input type="number" value="${val}" onchange="updateProg(${m.id},${ri},this.value,${ci})" min="0" max="${chunkSize}" style="width:70px;">
+                                <span style="font-size:0.7rem;opacity:0.6;">/ ${chunkSize}${m.unit||''}</span>
+                                </div>`;
+                            }
+                            html += `</div>`;
+                        });
+                        html += `</div>`;
+                        return html;
                     } else {
                         let drs = m.doneRounds || new Array(m.rounds).fill(0);
-                        while (drs.length < m.rounds) drs.push(0);
-                        let infoText = m.type === 'range' ? `全体範囲: ${m.start}〜${m.end}` : `全体量: ${m.total}`;
-                        return `<div class="glass-card">
-                            <h3>${m.name}</h3>
-                            <div style="font-size: 0.8rem; color: #a0aec0; margin-bottom: 8px;">${infoText} ${m.unit||''}</div>
-                            ${drs.map((dr, idx) => {
-                                let val = dr;
-                                if(m.type === 'range' && dr > 0) val = `${m.start}〜${m.start + dr - 1}`;
-                                return `<div class="item-row">
-                                    <span>${idx+1}周目</span>
-                                    <input type="${m.type==='range'?'text':'number'}" value="${val}" onchange="updateProg(${m.id},${idx+1},this.value)" style="width:100px;">
-                                    <span>${m.type==='range'?'':(m.unit||'')}</span>
-                                </div>`;
-                            }).join('')}
-                        </div>`;
+                        let infoText = m.type === 'range' ?
+                            `全体範囲: ${m.start}〜${m.end}` :
+                            `全体量: ${m.total}`;
+                        return `<div class="glass-card"><h3>${m.name} <small>(${e.subject})</small></h3>
+                        <div style="font-size: 0.8rem; color: #a0aec0; margin-bottom: 8px;">${infoText} ${m.unit||''}</div>
+                        ${drs.map((dr, idx) => {
+                            let val = dr;
+                            if(m.type === 'range' && dr > 0) val = `${m.start}-${m.start + dr - 1}`;
+                            return `<div class="item-row"><span>${idx+1}周目</span><input type="${m.type==='range'?'text':'number'}" value="${val}" onchange="updateProg(${m.id},${idx+1},this.value)" style="width:100px;"><span>${m.type==='range'?'':(m.unit||'')}</span></div>`
+                        }).join('')}</div>`;
                     }
                 }).join('')
-            ).join('') || '<p style="opacity:0.5;">登録なし</p>';
+            ).join('') || '<p style="opacity:0.5;">教材が登録されていません。「1. 教材登録」から追加してください。</p>';
 
-            // 計画表
+            // --- 計画表 ---
             let planHtml = '';
-            Object.keys(state.plan).sort().forEach(d => {
+            const sortedDates = Object.keys(state.plan).sort();
+            sortedDates.forEach(d => {
                 planHtml +=
                     `<h4 style="color:var(--accent); border-bottom:1px solid #333; margin-bottom:10px; margin-top:20px;">${d}</h4>`;
                 state.plan[d].forEach((t, idx) => {
+                    const isFinal = t.info && t.info.includes('最終確認');
+                    const tagClass = isFinal ? 'status-tag final' : 'status-tag';
                     const content = isPlanEditing ?
-                        `<input type="text" class="plan-edit-input" value="${t.desc}" oninput="updatePlanManual('${d}', ${idx}, this.value)">` :
+                        `<input type="text" class="plan-edit-input" value="${t.desc.replace(/"/g,'&quot;')}" oninput="updatePlanManual('${d}', ${idx}, this.value)">` :
                         `<b>${t.mat}: ${t.desc}</b>`;
                     planHtml +=
-                        `<div class="item-row"><div style="flex: 1;"><small>${t.sub}</small><br>${content}</div><span class="status-tag">${t.info}</span></div>`;
+                        `<div class="item-row"><div style="flex: 1;"><small>${t.sub}</small><br>${content}</div><span class="${tagClass}">${t.info}</span></div>`;
                 });
             });
-            document.getElementById('full-plan-area').innerHTML = planHtml || '<p style="opacity:0.5;">計画がありません</p>';
-
-            // カレンダー出力ボタンの表示制御
-            const exportBtn = document.getElementById('btn-export-ics');
-            if (exportBtn) {
-                exportBtn.style.display = hasPlan ? 'inline-block' : 'none';
-            }
+            document.getElementById('full-plan-area').innerHTML = planHtml ||
+                '<p style="opacity:0.5;">計画がありません。「ホーム」からAI学習計画を生成してください。</p>';
         }
 
         window.onload = () => {
             load();
             document.getElementById('sys-start-date').value = toYMD(new Date());
-            toggleMode();
+            toggleMode(); // 初期表示を整える
             render();
+
+            // オフライン対応用の簡易ServiceWorker
             if ('serviceWorker' in navigator) {
                 const sw =
                     "self.addEventListener('install',e=>e.waitUntil(self.skipWaiting()));self.addEventListener('activate',e=>e.waitUntil(self.clients.claim()));self.addEventListener('fetch',e=>{});";
