@@ -217,6 +217,52 @@
         .tut-dot.active { background: var(--accent); box-shadow: 0 0 6px var(--accent); }
         .tut-btn-row { display: flex; gap: 10px; }
         .tut-btn-row button { margin-bottom: 0; }
+
+        /* ===== 教材編集パネル ===== */
+        .mat-edit-panel {
+            background: rgba(0, 242, 255, 0.05);
+            border: 1px solid rgba(0, 242, 255, 0.3);
+            border-radius: 8px;
+            padding: 14px;
+            margin-top: 10px;
+        }
+        .mat-edit-panel label {
+            font-size: 0.78rem;
+            color: var(--accent);
+            display: block;
+            margin-bottom: 3px;
+        }
+        .mat-edit-panel input[type="number"] {
+            padding: 7px 10px;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+        .mat-edit-panel .edit-days-group {
+            display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px;
+        }
+        .mat-edit-panel .edit-days-group label {
+            display: flex; align-items: center; gap: 4px;
+            font-size: 0.85rem; color: #a0aec0; cursor: pointer;
+        }
+        .mat-edit-panel .edit-days-group input[type="checkbox"] {
+            width: 16px; height: 16px; margin: 0; accent-color: var(--accent);
+        }
+        .mat-edit-spaced-row {
+            display: flex; align-items: center; gap: 8px; margin-bottom: 10px;
+        }
+        .mat-edit-spaced-row input[type="checkbox"] {
+            width: 18px; height: 18px; margin: 0; accent-color: #bc00ff;
+        }
+        .mat-edit-spaced-row span {
+            font-size: 0.85rem; color: #a78bfa;
+        }
+        .mat-edit-save-btn {
+            background: linear-gradient(135deg, var(--accent), #0099ff);
+            color: #000; border: none; padding: 8px 16px;
+            border-radius: 6px; font-weight: bold; cursor: pointer;
+            width: auto; font-size: 0.85rem; margin-bottom: 0;
+        }
+        .mat-edit-save-btn:active { transform: scale(0.98); }
     </style>
 </head>
 <body>
@@ -646,6 +692,54 @@ function updatePlanManual(date, idx, value) {
     }
 }
 
+// ===== 変更点②：教材設定の編集 =====
+// 編集パネルの表示/非表示を切り替える
+function toggleMatEdit(eId, mId) {
+    const panelId = `mat-edit-panel-${mId}`;
+    const panel = document.getElementById(panelId);
+    if (!panel) return;
+    const isVisible = panel.style.display !== 'none';
+    panel.style.display = isVisible ? 'none' : 'block';
+}
+
+// 編集内容を保存する
+function saveMatEdit(eId, mId) {
+    const exam = state.exams.find(ex => ex.id === eId);
+    if (!exam) return;
+    const mat = exam.materials.find(m => m.id === mId);
+    if (!mat) return;
+
+    // 周回数
+    const newRounds = parseInt(document.getElementById(`edit-rounds-${mId}`).value) || 1;
+
+    // 曜日
+    const newDays = [];
+    document.querySelectorAll(`#edit-days-${mId} input[type="checkbox"]`).forEach(cb => {
+        if (cb.checked) newDays.push(parseInt(cb.value));
+    });
+    if (newDays.length === 0) { alert('曜日を1つ以上選択してください'); return; }
+
+    // 間隔反復（listタイプは変更不可）
+    let newSpaced = mat.spaced;
+    if (mat.type !== 'list') {
+        newSpaced = document.getElementById(`edit-spaced-${mId}`).checked;
+    }
+
+    // 周回数が増えた場合は doneRounds を拡張
+    if (mat.type !== 'list') {
+        if (!mat.doneRounds) mat.doneRounds = new Array(mat.rounds).fill(0);
+        while (mat.doneRounds.length < newRounds) mat.doneRounds.push(0);
+        if (mat.doneRounds.length > newRounds) mat.doneRounds = mat.doneRounds.slice(0, newRounds);
+    }
+
+    mat.rounds = newRounds;
+    mat.days = newDays;
+    mat.spaced = newSpaced;
+
+    playSound(800, 0.2);
+    save();
+}
+
 // --- LOGIC ---
 function addMaterial() {
     const sub = document.getElementById('in-sub').value.trim();
@@ -818,12 +912,16 @@ function generatePlan() {
                         for (let r = 1; r <= mat.rounds; r++) {
                             mat.items.forEach(it => { if (it.d < r) queue.push({ l: it.l, r: r }); });
                         }
-                        const perDay = Math.ceil(queue.length / daysCount);
+                        // ===== 変更点①：listタイプ：Math.floor＋余りを最終日に積む =====
+                        const perDay = Math.floor(queue.length / daysCount) || 1;
+                        const remainder = queue.length - perDay * daysCount;
                         let cur = 0;
-                        for (let i=0; i<daysCount && cur<queue.length; i++) {
+                        for (let i = 0; i < daysCount && cur < queue.length; i++) {
                             const k = toYMD(availableDates[i]);
                             if (!state.plan[k]) state.plan[k] = [];
-                            for (let j=0; j<perDay && cur<queue.length; j++) {
+                            // 最終日には余りを上乗せ
+                            const todayCount = (i === daysCount - 1) ? perDay + remainder : perDay;
+                            for (let j = 0; j < todayCount && cur < queue.length; j++) {
                                 if (queue[cur]) {
                                     const t = queue[cur++];
                                     state.plan[k].push({ sub: exam.subject, mat: mat.name, desc: t.l, info: `${t.r}周目`, id: mat.id });
@@ -844,12 +942,15 @@ function generatePlan() {
 
                         let totalRem = queue.reduce((sum, q) => sum + q.rem, 0);
                         if (totalRem > 0) {
-                            const perDay = Math.ceil(totalRem / daysCount);
+                            // ===== 変更点①：Math.floor＋余りを最終日に積む =====
+                            const perDay = Math.floor(totalRem / daysCount) || 1;
+                            const remainder = totalRem - perDay * daysCount;
                             let qIdx = 0;
-                            for (let i=0; i<daysCount && qIdx < queue.length; i++) {
+                            for (let i = 0; i < daysCount && qIdx < queue.length; i++) {
                                 const k = toYMD(availableDates[i]);
                                 if (!state.plan[k]) state.plan[k] = [];
-                                let dayRem = perDay;
+                                // 最終日には余りを上乗せ
+                                let dayRem = (i === daysCount - 1) ? perDay + remainder : perDay;
                                 while (dayRem > 0 && qIdx < queue.length) {
                                     let q = queue[qIdx];
                                     let amt = Math.min(dayRem, q.rem);
@@ -940,14 +1041,54 @@ function render() {
     const tasks = state.plan[today] || [];
     document.getElementById('today-list').innerHTML = tasks.length ? tasks.map(t => `<div class="item-row"><div><small>${t.sub}</small><br><b>${t.mat}: ${t.desc}</b></div><span class="status-tag">${t.info}</span></div>`).join('') : '<p style="text-align:center; opacity:0.5;">予定なし</p>';
 
-    // ▼▼▼ 変更点1: 登録済み教材に試験日・間隔反復ステータスを表示 ▼▼▼
+    // ===== 変更点②：登録済み教材に編集機能を追加 =====
+    const DAY_LABELS = ['日','月','火','水','木','金','土'];
     document.getElementById('registered-list').innerHTML = state.exams.map(e => e.materials.map(m => {
         const spacedLabel = m.spaced
             ? '<span style="font-size:0.65rem; background:linear-gradient(135deg,rgba(188,0,255,0.2),rgba(0,242,255,0.2)); border:1px solid rgba(188,0,255,0.5); color:#bc00ff; padding:1px 6px; border-radius:4px; margin-left:6px;">⚡ 間隔反復</span>'
             : '<span style="font-size:0.65rem; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.15); color:#64748b; padding:1px 6px; border-radius:4px; margin-left:6px;">通常学習</span>';
-        return `<div class="item-row"><div><small>${e.subject}</small><br><b>${m.name}</b>${spacedLabel}<br><span style="font-size:0.72rem; color:#64748b; margin-top:3px; display:inline-block;">📅 試験日: ${e.date}　|　🔁 ${m.rounds}周</span></div><button class="danger" onclick="deleteMat(${e.id}, ${m.id})">削除</button></div>`;
+
+        // 現在の曜日チェックボックスHTML
+        const daysHtml = [1,2,3,4,5,6,0].map(d => {
+            const checked = (m.days && m.days.includes(d)) ? 'checked' : '';
+            return `<label><input type="checkbox" value="${d}" ${checked}>${DAY_LABELS[d]}</label>`;
+        }).join('');
+
+        // 間隔反復チェック（listタイプは無効化）
+        const spacedChecked = m.spaced ? 'checked' : '';
+        const spacedDisabled = m.type === 'list' ? 'disabled' : '';
+        const spacedEditHtml = `
+            <div class="mat-edit-spaced-row">
+                <input type="checkbox" id="edit-spaced-${m.id}" ${spacedChecked} ${spacedDisabled}>
+                <span>⚡ 間隔反復学習${m.type === 'list' ? '（リスト教材は非対応）' : ''}</span>
+            </div>`;
+
+        // 編集パネルHTML
+        const editPanel = `
+            <div class="mat-edit-panel" id="mat-edit-panel-${m.id}" style="display:none;">
+                <label>目標周回数</label>
+                <input type="number" id="edit-rounds-${m.id}" value="${m.rounds}" min="1" style="width:80px;">
+                <label style="margin-top:4px;">学習する曜日</label>
+                <div class="edit-days-group" id="edit-days-${m.id}">${daysHtml}</div>
+                ${m.type !== 'list' ? spacedEditHtml : ''}
+                <button class="mat-edit-save-btn" onclick="saveMatEdit(${e.id}, ${m.id})">✔ 保存</button>
+            </div>`;
+
+        return `<div class="item-row" style="align-items:flex-start; flex-direction:column; gap:6px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+                <div>
+                    <small>${e.subject}</small><br>
+                    <b>${m.name}</b>${spacedLabel}<br>
+                    <span style="font-size:0.72rem; color:#64748b; margin-top:3px; display:inline-block;">📅 試験日: ${e.date}　|　🔁 ${m.rounds}周</span>
+                </div>
+                <div style="display:flex; gap:6px; flex-shrink:0;">
+                    <button class="secondary" onclick="toggleMatEdit(${e.id}, ${m.id})" style="width:auto; padding:6px 12px; font-size:0.78rem; margin:0;">✎ 編集</button>
+                    <button class="danger" onclick="deleteMat(${e.id}, ${m.id})">削除</button>
+                </div>
+            </div>
+            ${editPanel}
+        </div>`;
     }).join('')).join('') || '<p style="opacity:0.5;">登録なし</p>';
-    // ▲▲▲ 変更点1 ここまで ▲▲▲
 
     document.getElementById('progress-input-area').innerHTML = state.exams.map(e => e.materials.map(m => {
         if (m.type === 'list') {
@@ -993,5 +1134,6 @@ window.onload = () => {
 window.addEventListener('beforeunload', save);
 window.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') save(); });
 </script>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516" integrity="sha512-8DS7rgIrAmghBFwoOTujcf6D9rXvH8xm8JQ1Ja01h9QX8EzXldiszufYa4IFfKdLUKTTrnSFXLDkUEOTrZQ8Qg==" data-cf-beacon='{"version":"2024.11.0","token":"4edd5f8ec12a48cfa682ab8261b80a79","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
 </html>
